@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packaging Services - GlobeSwift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; }
+        .navbar { position: sticky; top: 0; z-index: 1000; padding: 1rem 5%; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,242,254,0.2); }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: #fff; text-decoration: none; transition: 0.3s; }
+        .nav-links a:hover { color: #00f2fe; }
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 5%; }
+        .hero-section { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-bottom: 4rem; }
+        .hero-section h1 { font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-img { width: 100%; border-radius: 20px; }
+        .features { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin: 4rem 0; }
+        .feature { background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 20px; text-align: center; transition: 0.3s; }
+        .feature:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+        .feature i { font-size: 2.5rem; color: #00f2fe; margin-bottom: 1rem; }
+        .feature h3 { margin-bottom: 0.5rem; }
+        .feature p { color: #aaa; }
+        .cta-btn { display: inline-block; background: linear-gradient(135deg,#00f2fe,#00e0ff); padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; color: #0a0a0f; margin-top: 2rem; transition: 0.3s; }
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,242,254,0.3); }
+        .footer { background: #050508; padding: 2rem 5%; text-align: center; color: #666; margin-top: 4rem; }
+        @media (max-width:768px) { .hero-section { grid-template-columns: 1fr; } .features { grid-template-columns: 1fr; } .menu-toggle { display: block; } .nav-links { position: fixed; top: 70px; left: -100%; width: 100%; background: rgba(10,10,15,0.98); flex-direction: column; padding: 2rem; transition: left 0.3s; } .nav-links.active { left: 0; } .hero-section h1 { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+            <div class="nav-links">
+                <a href="index.html">Home</a><a href="tracking.html">Track</a><a href="services.html">Services</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <div>
+                <h1>Packaging Services</h1>
+                <p style="color:#aaa; line-height:1.8;">Professional packaging and crating services with cargo insurance. Protect your valuable shipments with our expert packaging solutions.</p>
+                <a href="contact.html" class="cta-btn">Request Quote <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <img src="images/packaging.jpg" class="hero-img" alt="Packaging" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Packaging'">
+        </div>
+
+        <div class="features">
+            <div class="feature"><i class="fas fa-box-open"></i><h3>Custom Crating</h3><p>Bespoke crating for fragile items</p></div>
+            <div class="feature"><i class="fas fa-shield-alt"></i><h3>Insurance</h3><p>Full cargo insurance coverage</p></div>
+            <div class="feature"><i class="fas fa-leaf"></i><h3>Eco-Friendly</h3><p>Sustainable packaging materials</p></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelector('.menu-toggle')?.addEventListener('click',()=>{
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
