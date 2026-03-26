@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shipment Tracking Result - GlobeSwift</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GlobeSwift | Elite Shipment Intelligence Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -18,16 +18,132 @@
             font-family: 'Inter', sans-serif;
             background: #0a0a0f;
             color: #fff;
+            overflow-x: hidden;
         }
 
+        /* Premium Animated Background */
+        .bg-premium {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(ellipse at 30% 40%, #0a0a2a, #030308);
+        }
+
+        .grid-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0,242,254,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,242,254,0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridDrift 25s linear infinite;
+        }
+
+        @keyframes gridDrift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: floatOrb 20s ease-in-out infinite;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(50px, -30px) scale(1.2); opacity: 0.35; }
+        }
+
+        /* Premium Loading Animation */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0f;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-ring {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2rem;
+        }
+
+        .loader-ring svg {
+            width: 100%;
+            height: 100%;
+            animation: spinRing 1.2s linear infinite;
+        }
+
+        @keyframes spinRing {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 500;
+        }
+
+        .loader-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .loader-dot {
+            width: 6px;
+            height: 6px;
+            background: #00f2fe;
+            border-radius: 50%;
+            animation: dotPulse 1.2s ease-in-out infinite;
+        }
+
+        .loader-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loader-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+
+        /* Navbar */
         .navbar {
             position: sticky;
             top: 0;
             z-index: 1000;
             padding: 1rem 5%;
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(10, 10, 15, 0.92);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.25);
         }
 
         .nav-container {
@@ -39,13 +155,14 @@
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 800;
             background: linear-gradient(135deg, #fff, #00f2fe);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             text-decoration: none;
+            font-family: 'Space Grotesk', monospace;
         }
 
         .back-link {
@@ -54,6 +171,16 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-weight: 500;
+            transition: 0.3s;
+            padding: 0.5rem 1rem;
+            background: rgba(0,242,254,0.1);
+            border-radius: 50px;
+        }
+
+        .back-link:hover {
+            gap: 0.8rem;
+            background: rgba(0,242,254,0.2);
         }
 
         .container {
@@ -62,13 +189,32 @@
             padding: 0 5%;
         }
 
-        /* Tracking Header */
+        /* Tracking Header Premium */
         .tracking-header {
-            background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(0, 224, 255, 0.05));
-            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.08), rgba(0, 224, 255, 0.02));
+            border-radius: 32px;
             padding: 2rem;
             margin-bottom: 2rem;
             border: 1px solid rgba(0, 242, 254, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tracking-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,242,254,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 200%; }
         }
 
         .tracking-number-box {
@@ -85,34 +231,45 @@
             font-family: monospace;
             letter-spacing: 2px;
             font-weight: 700;
+            background: rgba(0,242,254,0.1);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            border: 1px solid rgba(0,242,254,0.3);
         }
 
         .verified-badge {
-            background: rgba(0, 255, 0, 0.2);
-            padding: 0.3rem 1rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
+            background: rgba(0, 255, 0, 0.12);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
             color: #0f0;
+            border: 1px solid rgba(0,255,0,0.3);
         }
 
         .status-badge {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.8rem;
+            border-radius: 60px;
             font-weight: 600;
             margin-top: 1rem;
+            font-size: 0.9rem;
         }
 
-        .status-order-confirmed { background: rgba(0, 242, 254, 0.2); color: #00f2fe; }
-        .status-picked { background: rgba(255, 165, 0, 0.2); color: #ffa500; }
-        .status-onway { background: rgba(0, 255, 255, 0.2); color: #0ff; }
-        .status-customs { background: rgba(255, 0, 0, 0.2); color: #ff4444; }
-        .status-delivered { background: rgba(0, 255, 0, 0.2); color: #0f0; }
+        .status-order_confirmed { background: linear-gradient(135deg, rgba(0,242,254,0.2), rgba(0,242,254,0.05)); color: #00f2fe; border: 1px solid rgba(0,242,254,0.5); }
+        .status-picked { background: linear-gradient(135deg, rgba(255,165,0,0.2), rgba(255,165,0,0.05)); color: #ffa500; border: 1px solid rgba(255,165,0,0.5); }
+        .status-onway { background: linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,255,255,0.05)); color: #0ff; border: 1px solid rgba(0,255,255,0.5); }
+        .status-customs { background: linear-gradient(135deg, rgba(255,68,68,0.2), rgba(255,68,68,0.05)); color: #ff4444; border: 1px solid rgba(255,68,68,0.5); }
+        .status-delivered { background: linear-gradient(135deg, rgba(0,255,0,0.2), rgba(0,255,0,0.05)); color: #0f0; border: 1px solid rgba(0,255,0,0.5); }
 
         .last-updated {
             color: #888;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         /* Grid Layout */
@@ -129,38 +286,54 @@
             }
         }
 
-        /* Info Cards */
+        /* Info Cards Premium */
         .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .info-card:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.04);
         }
 
         .info-card h3 {
             margin-bottom: 1.5rem;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
+            color: #00f2fe;
+            letter-spacing: -0.3px;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.9rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
         }
 
         .info-label {
             color: #888;
+            font-size: 0.85rem;
         }
 
         .info-value {
             font-weight: 500;
+            font-size: 0.9rem;
         }
 
-        /* Timeline */
+        /* Timeline Premium */
         .timeline {
             position: relative;
             padding-left: 2rem;
@@ -170,99 +343,167 @@
             position: relative;
             padding-bottom: 2rem;
             padding-left: 1.5rem;
-            border-left: 2px solid rgba(255, 255, 255, 0.2);
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
         }
 
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -8px;
+            left: -9px;
             top: 0;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: #333;
+            background: rgba(255, 255, 255, 0.15);
             border: 2px solid #00f2fe;
+            transition: all 0.3s;
         }
 
         .timeline-item.completed::before {
             background: #00f2fe;
+            box-shadow: 0 0 12px #00f2fe;
         }
 
         .timeline-item.active::before {
             background: #00f2fe;
-            box-shadow: 0 0 10px #00f2fe;
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 20px #00f2fe;
+            animation: pulseGlow 1.2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 5px #00f2fe; transform: scale(1); }
+            50% { box-shadow: 0 0 20px #00f2fe; transform: scale(1.1); }
         }
 
         .timeline-date {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #888;
             margin-bottom: 0.3rem;
+            font-family: monospace;
         }
 
         .timeline-title {
             font-weight: 600;
             margin-bottom: 0.3rem;
+            font-size: 0.95rem;
         }
 
         .timeline-desc {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #aaa;
         }
 
-        /* Map */
+        /* Map Premium */
         .map-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 28px;
             overflow: hidden;
             margin-bottom: 2rem;
+            border: 1px solid rgba(0, 242, 254, 0.2);
         }
 
         #map {
-            height: 400px;
+            height: 380px;
             width: 100%;
-            background: #1a1a2e;
+            background: #0f0f1a;
         }
 
         .map-caption {
             padding: 1rem;
             text-align: center;
-            color: #888;
-            font-size: 0.85rem;
+            color: #666;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.4);
         }
 
-        /* Print Button */
-        .print-btn {
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .print-btn, .share-btn {
+            flex: 1;
             background: linear-gradient(135deg, #00f2fe, #00e0ff);
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
+            padding: 1rem;
+            border-radius: 60px;
             font-weight: 600;
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            width: 100%;
             justify-content: center;
+            gap: 0.6rem;
+            transition: all 0.3s;
+            color: #0a0a0f;
         }
 
+        .share-btn {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,242,254,0.3);
+        }
+
+        .share-btn:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Not Found */
+        .not-found {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 32px;
+            border: 1px solid rgba(255,68,68,0.3);
+        }
+
+        .not-found i {
+            font-size: 4rem;
+            color: #ff4444;
+            margin-bottom: 1.5rem;
+        }
+
+        .not-found h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .not-found p {
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .not-found-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #0a0a0f;
+            font-weight: 600;
+        }
+
+        /* Footer */
         .footer {
-            background: #050508;
+            background: #030308;
             padding: 2rem 5%;
             text-align: center;
             color: #666;
             margin-top: 3rem;
+            border-top: 1px solid rgba(0, 242, 254, 0.1);
+            font-size: 0.8rem;
         }
 
         @media print {
-            .navbar, .back-link, .print-btn, .footer {
+            .navbar, .back-link, .action-buttons, .footer, .map-container {
                 display: none;
             }
             body {
@@ -272,58 +513,77 @@
             .info-card {
                 background: white;
                 border: 1px solid #ddd;
+                break-inside: avoid;
+            }
+            .tracking-header {
+                background: white;
+                border: 1px solid #ddd;
             }
         }
     </style>
 </head>
 <body>
+    <div class="bg-premium"></div>
+    <div class="grid-lines"></div>
+    <div class="orb" style="width: 300px; height: 300px; background: rgba(0,242,254,0.08); top: 10%; left: -80px;"></div>
+    <div class="orb" style="width: 400px; height: 400px; background: rgba(0,242,254,0.06); bottom: 0%; right: -120px; animation-duration: 25s;"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-content">
+            <div class="loader-ring">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,242,254,0.2)" stroke-width="3"/>
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#00f2fe" stroke-width="3" stroke-dasharray="70 210" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="loader-text">ANALYZING SHIPMENT DATA</div>
+            <div class="loader-dots">
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
-            <a href="tracking.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Tracking</a>
+            <a href="tracking.html" class="back-link"><i class="fas fa-arrow-left"></i> New Tracking</a>
         </div>
     </nav>
 
     <div class="container" id="trackingContent">
         <div style="text-align: center; padding: 4rem;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 3rem;"></i>
-            <p>Loading tracking information...</p>
+            <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; color: #00f2fe;"></i>
+            <p style="margin-top: 1rem; color: #888;">Loading shipment intelligence...</p>
         </div>
     </div>
 
     <footer class="footer">
-        <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+        <p>GlobeSwift Elite Shipment Intelligence System v4.0 | Secure & Encrypted</p>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Complete tracking database - ALL PACKAGES ON THE WAY as in your image
-        const trackingData = {
+        // ============================================
+        // GLOBESWIFT ELITE SHIPMENT INTELLIGENCE
+        // ============================================
+
+        const STORAGE_KEY = 'globeswift_shipments';
+
+        // Default Shipments Database
+        const defaultShipments = {
             'GL-3722-TAB2NLX6': {
                 status: 'order_confirmed',
                 statusText: 'Order Confirmed',
                 statusDesc: 'Your shipment has been confirmed and is being processed.',
-                lastUpdated: 'Mar 17, 2026 - 09:40 PM',
-                sender: {
-                    name: 'Prince Hamdan Fazza',
-                    country: 'United Arab Emirates',
-                    phone: 'N/A'
-                },
-                receiver: {
-                    name: 'Aleksandar Molan',
-                    phone: '+381692609980',
-                    email: 'molan-aleksandar@hotmail.com'
-                },
-                parcel: {
-                    weight: '2.5 kg',
-                    type: 'Documents',
-                    dutyFees: 'Paid',
-                    pickupDate: 'Mar 26, 2026 - 04:48 PM',
-                    expectedDelivery: 'Mar 28, 2026 - 04:48 PM',
-                    trackingStatus: 'Order Confirmed'
-                },
+                lastUpdated: 'Mar 26, 2026 - 05:48 PM',
+                sender: { name: 'Prince Hamdan Fazza', country: 'United Arab Emirates', phone: 'N/A' },
+                receiver: { name: 'Aleksandar Molan', phone: '+381692609980', email: 'molan-aleksandar@hotmail.com' },
+                parcel: { weight: '2.5 kg', type: 'Documents', dutyFees: 'Paid', pickupDate: 'Mar 26, 2026 - 04:48 PM', expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Order Confirmed' },
                 timeline: [
-                    { date: 'Mar 17, 2026 - 09:40 PM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.', completed: true, active: true },
+                    { date: 'Mar 26, 2026 - 04:48 PM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.', completed: true, active: true },
                     { date: 'Pending', title: 'Picked by Courier', desc: 'Courier will pick up the package', completed: false, active: false },
                     { date: 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: false, active: false },
                     { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
@@ -337,24 +597,9 @@
                 statusText: 'Picked by Courier',
                 statusDesc: 'Your package has been picked up by our courier.',
                 lastUpdated: 'Mar 26, 2026 - 02:30 PM',
-                sender: {
-                    name: 'Ahmed Al Maktoum',
-                    country: 'United Arab Emirates',
-                    phone: '+971 50 123 4567'
-                },
-                receiver: {
-                    name: 'Maria Garcia',
-                    phone: '+34 612 345 678',
-                    email: 'maria.garcia@email.com'
-                },
-                parcel: {
-                    weight: '5.2 kg',
-                    type: 'Electronics',
-                    dutyFees: 'Paid',
-                    pickupDate: 'Mar 26, 2026 - 10:00 AM',
-                    expectedDelivery: 'Mar 28, 2026 - 06:00 PM',
-                    trackingStatus: 'Picked by Courier'
-                },
+                sender: { name: 'Ahmed Al Maktoum', country: 'United Arab Emirates', phone: '+971 50 123 4567' },
+                receiver: { name: 'Maria Garcia', phone: '+34 612 345 678', email: 'maria.garcia@email.com' },
+                parcel: { weight: '5.2 kg', type: 'Electronics', dutyFees: 'Paid', pickupDate: 'Mar 26, 2026 - 10:00 AM', expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Picked by Courier' },
                 timeline: [
                     { date: 'Mar 26, 2026 - 10:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
                     { date: 'Mar 26, 2026 - 02:30 PM', title: 'Picked by Courier', desc: 'Package picked up by courier', completed: true, active: true },
@@ -370,24 +615,9 @@
                 statusText: 'On The Way',
                 statusDesc: 'Your shipment is in transit and moving through our network.',
                 lastUpdated: 'Mar 26, 2026 - 08:00 AM',
-                sender: {
-                    name: 'Dubai Logistics Co.',
-                    country: 'United Arab Emirates',
-                    phone: '+971 4 123 4567'
-                },
-                receiver: {
-                    name: 'James Wilson',
-                    phone: '+44 20 7946 0123',
-                    email: 'james.wilson@email.co.uk'
-                },
-                parcel: {
-                    weight: '12.8 kg',
-                    type: 'Commercial Goods',
-                    dutyFees: 'Paid',
-                    pickupDate: 'Mar 25, 2026 - 09:00 AM',
-                    expectedDelivery: 'Mar 27, 2026 - 03:00 PM',
-                    trackingStatus: 'On The Way'
-                },
+                sender: { name: 'Dubai Logistics Co.', country: 'United Arab Emirates', phone: '+971 4 123 4567' },
+                receiver: { name: 'James Wilson', phone: '+44 20 7946 0123', email: 'james.wilson@email.co.uk' },
+                parcel: { weight: '12.8 kg', type: 'Commercial Goods', dutyFees: 'Paid', pickupDate: 'Mar 25, 2026 - 09:00 AM', expectedDelivery: 'Mar 27, 2026', trackingStatus: 'On The Way' },
                 timeline: [
                     { date: 'Mar 25, 2026 - 09:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
                     { date: 'Mar 25, 2026 - 02:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
@@ -403,29 +633,14 @@
                 statusText: 'Custom Hold',
                 statusDesc: 'Shipment is being held for customs clearance.',
                 lastUpdated: 'Mar 26, 2026 - 11:00 AM',
-                sender: {
-                    name: 'Global Trading LLC',
-                    country: 'China',
-                    phone: '+86 10 1234 5678'
-                },
-                receiver: {
-                    name: 'Robert Chen',
-                    phone: '+1 212 555 0123',
-                    email: 'robert.chen@email.com'
-                },
-                parcel: {
-                    weight: '25.0 kg',
-                    type: 'Electronics',
-                    dutyFees: 'Pending',
-                    pickupDate: 'Mar 24, 2026 - 08:00 AM',
-                    expectedDelivery: 'Pending Clearance',
-                    trackingStatus: 'Customs Hold'
-                },
+                sender: { name: 'Global Trading LLC', country: 'China', phone: '+86 10 1234 5678' },
+                receiver: { name: 'Robert Chen', phone: '+1 212 555 0123', email: 'robert.chen@email.com' },
+                parcel: { weight: '25.0 kg', type: 'Electronics', dutyFees: 'Pending', pickupDate: 'Mar 24, 2026 - 08:00 AM', expectedDelivery: 'Pending Clearance', trackingStatus: 'Customs Hold' },
                 timeline: [
                     { date: 'Mar 24, 2026 - 08:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
                     { date: 'Mar 24, 2026 - 01:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
                     { date: 'Mar 25, 2026 - 09:00 AM', title: 'On The Way', desc: 'Shipment in transit', completed: true, active: false },
-                    { date: 'Mar 26, 2026 - 11:00 AM', title: 'Custom Hold', desc: 'Awaiting customs clearance', completed: true, active: true }
+                    { date: 'Mar 26, 2026 - 11:00 AM', title: 'Custom Hold', desc: 'Awaiting customs clearance documentation', completed: true, active: true }
                 ],
                 origin: 'China',
                 destination: 'United States',
@@ -436,24 +651,9 @@
                 statusText: 'Delivered',
                 statusDesc: 'Your package has been successfully delivered.',
                 lastUpdated: 'Mar 26, 2026 - 09:15 AM',
-                sender: {
-                    name: 'Tech Supply Co.',
-                    country: 'Japan',
-                    phone: '+81 3 1234 5678'
-                },
-                receiver: {
-                    name: 'Sarah Johnson',
-                    phone: '+1 310 555 0987',
-                    email: 'sarah.johnson@email.com'
-                },
-                parcel: {
-                    weight: '3.2 kg',
-                    type: 'Electronics',
-                    dutyFees: 'Paid',
-                    pickupDate: 'Mar 20, 2026 - 10:00 AM',
-                    expectedDelivery: 'Mar 26, 2026 - 09:00 AM',
-                    trackingStatus: 'Delivered'
-                },
+                sender: { name: 'Tech Supply Co.', country: 'Japan', phone: '+81 3 1234 5678' },
+                receiver: { name: 'Sarah Johnson', phone: '+1 310 555 0987', email: 'sarah.johnson@email.com' },
+                parcel: { weight: '3.2 kg', type: 'Electronics', dutyFees: 'Paid', pickupDate: 'Mar 20, 2026 - 10:00 AM', expectedDelivery: 'Mar 26, 2026 - 09:00 AM', trackingStatus: 'Delivered' },
                 timeline: [
                     { date: 'Mar 20, 2026 - 10:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
                     { date: 'Mar 20, 2026 - 03:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
@@ -466,120 +666,158 @@
             }
         };
 
-        let trackingNumber = localStorage.getItem('trackingNumber');
-        if (!trackingNumber || !trackingData[trackingNumber.toUpperCase()]) {
-            trackingNumber = 'GL-3722-TAB2NLX6';
-        } else {
-            trackingNumber = trackingNumber.toUpperCase();
+        // Get shipments from storage
+        function getShipments() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Object.keys(parsed).length > 0) {
+                        return parsed;
+                    }
+                } catch(e) {}
+            }
+            // Save defaults if empty
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultShipments));
+            return { ...defaultShipments };
         }
 
-        const data = trackingData[trackingNumber];
+        // Get single shipment
+        function getShipment(trackingCode) {
+            const shipments = getShipments();
+            return shipments[trackingCode.toUpperCase()] || null;
+        }
+
+        // Get tracking number from URL or localStorage
+        let trackingNumber = localStorage.getItem('trackingNumber');
+        if (!trackingNumber) {
+            trackingNumber = 'GL-3722-TAB2NLX6';
+        }
+        trackingNumber = trackingNumber.toUpperCase();
+
+        const shipmentData = getShipment(trackingNumber);
 
         function getStatusClass(status) {
             const map = {
-                'order_confirmed': 'status-order-confirmed',
+                'order_confirmed': 'status-order_confirmed',
                 'picked': 'status-picked',
                 'onway': 'status-onway',
                 'customs': 'status-customs',
                 'delivered': 'status-delivered'
             };
-            return map[status];
+            return map[status] || 'status-order_confirmed';
         }
 
         function renderTracking() {
             const container = document.getElementById('trackingContent');
-            const statusClass = getStatusClass(data.status);
+            
+            if (!shipmentData) {
+                container.innerHTML = `
+                    <div class="not-found">
+                        <i class="fas fa-search"></i>
+                        <h2>Tracking Number Not Found</h2>
+                        <p>The tracking number <strong>${trackingNumber}</strong> does not exist in our system.</p>
+                        <p>Please verify the number and try again.</p>
+                        <a href="tracking.html" class="not-found-btn"><i class="fas fa-arrow-left"></i> Try Another Tracking</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const statusClass = getStatusClass(shipmentData.status);
             
             container.innerHTML = `
                 <div class="tracking-header">
                     <div class="tracking-number-box">
-                        <div class="tracking-number">${trackingNumber}</div>
-                        <div class="verified-badge"><i class="fas fa-check-circle"></i> Verified</div>
+                        <div class="tracking-number"><i class="fas fa-barcode"></i> ${trackingNumber}</div>
+                        <div class="verified-badge"><i class="fas fa-shield-alt"></i> Verified & Encrypted</div>
                     </div>
                     <div>
                         <div class="status-badge ${statusClass}">
-                            <i class="fas ${data.status === 'delivered' ? 'fa-check-circle' : data.status === 'customs' ? 'fa-clock' : 'fa-truck'}"></i> ${data.statusText}
+                            <i class="fas ${shipmentData.status === 'delivered' ? 'fa-check-circle' : shipmentData.status === 'customs' ? 'fa-clock' : 'fa-truck'}"></i> ${shipmentData.statusText}
                         </div>
                     </div>
                     <div class="last-updated">
-                        <i class="fas fa-clock"></i> Last Updated: ${data.lastUpdated}
+                        <i class="fas fa-clock"></i> Last Intelligence Update: ${shipmentData.lastUpdated}
+                        <i class="fas fa-lock" style="margin-left: auto; font-size: 0.7rem;"></i>
                     </div>
                 </div>
 
                 <div class="tracking-grid">
                     <div>
                         <div class="info-card">
-                            <h3><i class="fas fa-user"></i> Sender Information</h3>
+                            <h3><i class="fas fa-user-tie"></i> Shipper Information</h3>
                             <div class="info-row">
                                 <span class="info-label">Name:</span>
-                                <span class="info-value">${data.sender.name}</span>
+                                <span class="info-value">${shipmentData.sender?.name || 'N/A'}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Country:</span>
-                                <span class="info-value">${data.sender.country}</span>
+                                <span class="info-label">Origin Country:</span>
+                                <span class="info-value">${shipmentData.sender?.country || 'N/A'}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Phone:</span>
-                                <span class="info-value">${data.sender.phone}</span>
+                                <span class="info-label">Contact:</span>
+                                <span class="info-value">${shipmentData.sender?.phone || 'N/A'}</span>
                             </div>
                         </div>
 
                         <div class="info-card" style="margin-top: 1.5rem;">
-                            <h3><i class="fas fa-user-check"></i> Receiver Information</h3>
+                            <h3><i class="fas fa-user-check"></i> Consignee Information</h3>
                             <div class="info-row">
                                 <span class="info-label">Name:</span>
-                                <span class="info-value">${data.receiver.name}</span>
+                                <span class="info-value">${shipmentData.receiver?.name || 'N/A'}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Phone:</span>
-                                <span class="info-value">${data.receiver.phone}</span>
+                                <span class="info-value">${shipmentData.receiver?.phone || 'N/A'}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Email:</span>
-                                <span class="info-value">${data.receiver.email}</span>
+                                <span class="info-value">${shipmentData.receiver?.email || 'N/A'}</span>
                             </div>
                         </div>
                     </div>
 
                     <div>
                         <div class="info-card">
-                            <h3><i class="fas fa-box"></i> Parcel Information</h3>
+                            <h3><i class="fas fa-cube"></i> Parcel Intelligence</h3>
                             <div class="info-row">
-                                <span class="info-label">Duty Fees:</span>
-                                <span class="info-value" style="color: ${data.parcel.dutyFees === 'Paid' ? '#0f0' : '#ff4444'}">${data.parcel.dutyFees}</span>
+                                <span class="info-label">Duty & Taxes:</span>
+                                <span class="info-value" style="color: ${shipmentData.parcel?.dutyFees === 'Paid' ? '#0f0' : '#ff4444'}"><i class="fas ${shipmentData.parcel?.dutyFees === 'Paid' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> ${shipmentData.parcel?.dutyFees || 'N/A'}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Weight:</span>
-                                <span class="info-value">${data.parcel.weight}</span>
+                                <span class="info-value">${shipmentData.parcel?.weight || 'N/A'}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Type:</span>
-                                <span class="info-value">${data.parcel.type}</span>
+                                <span class="info-label">Category:</span>
+                                <span class="info-value">${shipmentData.parcel?.type || 'N/A'}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Pickup Date:</span>
-                                <span class="info-value">${data.parcel.pickupDate}</span>
+                                <span class="info-value">${shipmentData.parcel?.pickupDate || 'N/A'}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Expected Delivery:</span>
-                                <span class="info-value">${data.parcel.expectedDelivery}</span>
+                                <span class="info-label">ETA:</span>
+                                <span class="info-value">${shipmentData.parcel?.expectedDelivery || 'Pending'}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Tracking Status:</span>
-                                <span class="info-value">${data.parcel.trackingStatus}</span>
+                                <span class="info-label">Current Status:</span>
+                                <span class="info-value">${shipmentData.parcel?.trackingStatus || 'N/A'}</span>
                             </div>
                         </div>
 
-                        <button class="print-btn" onclick="window.print()">
-                            <i class="fas fa-print"></i> Print Receipt
-                        </button>
+                        <div class="action-buttons">
+                            <button class="print-btn" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
+                            <button class="share-btn" onclick="copyTrackingLink()"><i class="fas fa-share-alt"></i> Share Tracking</button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="info-card">
-                    <h3><i class="fas fa-history"></i> Shipment History</h3>
+                    <h3><i class="fas fa-timeline"></i> Shipment Journey</h3>
                     <div class="timeline">
-                        ${data.timeline.map(item => `
+                        ${shipmentData.timeline.map(item => `
                             <div class="timeline-item ${item.completed ? 'completed' : ''} ${item.active ? 'active' : ''}">
                                 <div class="timeline-date">${item.date}</div>
                                 <div class="timeline-title">${item.title}</div>
@@ -592,29 +830,54 @@
                 <div class="map-container">
                     <div id="map"></div>
                     <div class="map-caption">
-                        <i class="fas fa-map-marker-alt"></i> Complete Shipment Route (Fixed Map View)<br>
-                        <strong>Origin: ${data.origin}</strong>
-                        <br><small>Leaflet | © OpenStreetMap contributors</small>
+                        <i class="fas fa-map-marker-alt"></i> Current Location Intelligence | <strong>Origin: ${shipmentData.origin}</strong> → Destination: ${shipmentData.destination}
+                        <br><small>Powered by GlobeSwift Satellite Network</small>
                     </div>
                 </div>
             `;
 
+            // Initialize map
             setTimeout(() => {
                 if (typeof L !== 'undefined') {
-                    const map = L.map('map').setView(data.coordinates, 5);
+                    const coords = shipmentData.coordinates || [25.2048, 55.2708];
+                    const map = L.map('map').setView(coords, 5);
                     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                         attribution: '&copy; OpenStreetMap contributors',
                         subdomains: 'abcd'
                     }).addTo(map);
                     
-                    L.marker(data.coordinates).addTo(map)
-                        .bindPopup(`<b>${data.origin}</b><br>Shipment ${data.statusText}`)
+                    const customIcon = L.divIcon({
+                        html: '<div style="background: #00f2fe; width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 15px #00f2fe; border: 2px solid white;"></div>',
+                        iconSize: [14, 14],
+                        className: 'custom-marker'
+                    });
+                    
+                    L.marker(coords, { icon: customIcon }).addTo(map)
+                        .bindPopup(`<b>${shipmentData.origin}</b><br>Shipment: ${shipmentData.statusText}`)
                         .openPopup();
                 }
             }, 100);
         }
 
-        renderTracking();
+        function copyTrackingLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url);
+            alert('✓ Tracking link copied to clipboard');
+        }
+
+        // Hide loader after content loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loaderOverlay');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 600);
+                }
+                renderTracking();
+            }, 800);
+        });
     </script>
 </body>
 </html>
