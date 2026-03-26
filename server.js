@@ -1,8 +1,7 @@
 const express = require('express');
-const { MongoClient, ObjectId } = require('mongodb');
+const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,7 +9,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+// Serve static files from ROOT
+app.use(express.static(__dirname));
 
 // MongoDB Connection
 const uri = "mongodb+srv://mrdev:dev091339@cluster0.grjlq7v.mongodb.net/?retryWrites=true&w=majority";
@@ -25,12 +26,8 @@ async function connectDB() {
         shipmentsCollection = db.collection('shipments');
         console.log('✅ Connected to MongoDB Atlas');
         
-        // Create unique index on trackingCode
         await shipmentsCollection.createIndex({ trackingCode: 1 }, { unique: true });
-        
-        // Initialize default data if empty
         await initDefaultData();
-        
     } catch (error) {
         console.error('❌ MongoDB connection error:', error);
     }
@@ -47,15 +44,35 @@ async function initDefaultData() {
                 statusText: 'Order Confirmed',
                 statusDesc: 'Your shipment has been confirmed and is being processed.',
                 lastUpdated: now,
-                sender: { name: 'Prince Hamdan Fazza', country: 'United Arab Emirates', phone: 'N/A' },
-                receiver: { name: 'Aleksandar Molan', phone: '+381692609980', email: 'molan-aleksandar@hotmail.com' },
+                sender: { 
+                    name: 'Prince Hamdan Fazza', 
+                    country: 'United Arab Emirates', 
+                    address: 'Abu Dhabi, Dubai',
+                    phone: 'N/A' 
+                },
+                receiver: { 
+                    name: 'Aleksandar Molan', 
+                    country: 'Serbia', 
+                    address: 'Belgrade, Serbia',
+                    phone: '+381692609980', 
+                    email: 'molan-aleksandar@hotmail.com' 
+                },
                 parcel: { 
                     weight: '2.5 kg', 
                     type: 'Documents', 
-                    dutyFees: 'Paid',  // ← DUTY FEES SET BY ADMIN
+                    dutyFees: 'Paid', 
                     pickupDate: now, 
                     expectedDelivery: 'Mar 28, 2026', 
                     trackingStatus: 'Order Confirmed' 
+                },
+                invoice: {
+                    orderId: '326',
+                    bookingMode: 'ToPay',
+                    shipmentCost: 'EUR 300',
+                    clearanceCost: 'EUR 350',
+                    totalAmount: 'EUR 650',
+                    paymentStatus: 'To Pay on Delivery',
+                    paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery']
                 },
                 timeline: [
                     { date: now, title: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.', completed: true, active: true },
@@ -73,15 +90,35 @@ async function initDefaultData() {
                 statusText: 'Picked by Courier',
                 statusDesc: 'Your package has been picked up by our courier.',
                 lastUpdated: now,
-                sender: { name: 'Ahmed Al Maktoum', country: 'United Arab Emirates', phone: '+971 50 123 4567' },
-                receiver: { name: 'Maria Garcia', phone: '+34 612 345 678', email: 'maria.garcia@email.com' },
+                sender: { 
+                    name: 'Ahmed Al Maktoum', 
+                    country: 'United Arab Emirates', 
+                    address: 'Dubai Logistics Hub',
+                    phone: '+971 50 123 4567' 
+                },
+                receiver: { 
+                    name: 'Maria Garcia', 
+                    country: 'Spain', 
+                    address: 'Madrid, Spain',
+                    phone: '+34 612 345 678', 
+                    email: 'maria.garcia@email.com' 
+                },
                 parcel: { 
                     weight: '5.2 kg', 
                     type: 'Electronics', 
-                    dutyFees: 'Paid',  // ← DUTY FEES SET BY ADMIN
+                    dutyFees: 'Paid', 
                     pickupDate: now, 
                     expectedDelivery: 'Mar 28, 2026', 
                     trackingStatus: 'Picked by Courier' 
+                },
+                invoice: {
+                    orderId: '452',
+                    bookingMode: 'Prepaid',
+                    shipmentCost: 'EUR 450',
+                    clearanceCost: 'EUR 200',
+                    totalAmount: 'EUR 650',
+                    paymentStatus: 'Paid',
+                    paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery']
                 },
                 timeline: [
                     { date: now, title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
@@ -96,7 +133,7 @@ async function initDefaultData() {
         ];
         
         await shipmentsCollection.insertMany(defaultShipments);
-        console.log('✅ Default shipments added');
+        console.log('✅ Default shipments added with invoice fields');
     }
 }
 
@@ -106,7 +143,7 @@ connectDB();
 // API ENDPOINTS
 // ============================================
 
-// Get all shipments (for admin)
+// Get all shipments
 app.get('/api/shipments', async (req, res) => {
     try {
         const shipments = await shipmentsCollection.find({}).toArray();
@@ -119,6 +156,7 @@ app.get('/api/shipments', async (req, res) => {
                 sender: s.sender,
                 receiver: s.receiver,
                 parcel: s.parcel,
+                invoice: s.invoice,
                 timeline: s.timeline,
                 origin: s.origin,
                 destination: s.destination,
@@ -136,11 +174,9 @@ app.get('/api/shipments/:trackingCode', async (req, res) => {
     try {
         const trackingCode = req.params.trackingCode.toUpperCase();
         const shipment = await shipmentsCollection.findOne({ trackingCode });
-        
         if (!shipment) {
             return res.status(404).json({ error: 'Shipment not found' });
         }
-        
         const { _id, ...shipmentData } = shipment;
         res.json(shipmentData);
     } catch (error) {
@@ -148,13 +184,12 @@ app.get('/api/shipments/:trackingCode', async (req, res) => {
     }
 });
 
-// CREATE NEW SHIPMENT - ADMIN CAN SET DUTY FEES
+// CREATE NEW SHIPMENT - WITH INVOICE FIELDS
 app.post('/api/shipments', async (req, res) => {
     try {
         const { trackingCode, ...shipmentData } = req.body;
         const upperCode = trackingCode.toUpperCase();
         
-        // Check if exists
         const existing = await shipmentsCollection.findOne({ trackingCode: upperCode });
         if (existing) {
             return res.status(409).json({ error: 'Tracking code already exists' });
@@ -162,7 +197,6 @@ app.post('/api/shipments', async (req, res) => {
         
         const now = new Date().toLocaleString();
         
-        // Status mapping
         const statusMap = {
             'order_confirmed': 'Order Confirmed',
             'picked': 'Picked by Courier',
@@ -171,10 +205,9 @@ app.post('/api/shipments', async (req, res) => {
             'delivered': 'Delivered'
         };
         
-        // Build timeline based on status
         const status = shipmentData.status;
         const timeline = [
-            { date: now, title: 'Order Confirmed', desc: 'Shipment confirmed', completed: status !== 'order_confirmed', active: status === 'order_confirmed' },
+            { date: now, title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: status !== 'order_confirmed', active: status === 'order_confirmed' },
             { date: status === 'picked' || status === 'onway' || status === 'customs' || status === 'delivered' ? now : 'Pending', title: 'Picked by Courier', desc: 'Package picked up', completed: status === 'picked' || status === 'onway' || status === 'customs' || status === 'delivered', active: status === 'picked' },
             { date: status === 'onway' || status === 'customs' || status === 'delivered' ? now : 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: status === 'onway' || status === 'customs' || status === 'delivered', active: status === 'onway' },
             { date: status === 'customs' ? now : 'Pending', title: 'Custom Hold', desc: 'Customs clearance', completed: status === 'customs' || status === 'delivered', active: status === 'customs' },
@@ -188,15 +221,35 @@ app.post('/api/shipments', async (req, res) => {
             statusDesc: shipmentData.statusDesc || `Your shipment is ${statusMap[status].toLowerCase()}`,
             lastUpdated: now,
             createdAt: now,
-            sender: shipmentData.sender || { name: 'N/A', country: 'Unknown', phone: 'N/A' },
-            receiver: shipmentData.receiver || { name: 'N/A', phone: 'N/A', email: 'N/A' },
+            sender: {
+                name: shipmentData.sender?.name || 'N/A',
+                country: shipmentData.sender?.country || 'Unknown',
+                address: shipmentData.sender?.address || '',
+                phone: shipmentData.sender?.phone || 'N/A'
+            },
+            receiver: {
+                name: shipmentData.receiver?.name || 'N/A',
+                country: shipmentData.receiver?.country || 'Unknown',
+                address: shipmentData.receiver?.address || '',
+                phone: shipmentData.receiver?.phone || 'N/A',
+                email: shipmentData.receiver?.email || 'N/A'
+            },
             parcel: {
                 weight: shipmentData.parcel?.weight || 'N/A',
                 type: shipmentData.parcel?.type || 'N/A',
-                dutyFees: shipmentData.parcel?.dutyFees || 'Paid',  // ← DUTY FEES FROM ADMIN
+                dutyFees: shipmentData.parcel?.dutyFees || 'Paid',
                 pickupDate: now,
                 expectedDelivery: shipmentData.parcel?.expectedDelivery || 'Pending',
                 trackingStatus: statusMap[status]
+            },
+            invoice: {
+                orderId: shipmentData.invoice?.orderId || Math.floor(Math.random() * 9000 + 1000).toString(),
+                bookingMode: shipmentData.invoice?.bookingMode || 'Standard',
+                shipmentCost: shipmentData.invoice?.shipmentCost || 'N/A',
+                clearanceCost: shipmentData.invoice?.clearanceCost || 'N/A',
+                totalAmount: shipmentData.invoice?.totalAmount || 'N/A',
+                paymentStatus: shipmentData.invoice?.paymentStatus || 'Pending',
+                paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery']
             },
             timeline: timeline,
             origin: shipmentData.sender?.country || 'Unknown',
@@ -204,19 +257,23 @@ app.post('/api/shipments', async (req, res) => {
             coordinates: shipmentData.coordinates || [25.2048, 55.2708]
         };
         
-        const result = await shipmentsCollection.insertOne(newShipment);
+        await shipmentsCollection.insertOne(newShipment);
         res.json({ success: true, trackingCode: upperCode });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Update shipment (admin)
+// Update shipment
 app.put('/api/shipments/:trackingCode', async (req, res) => {
     try {
         const trackingCode = req.params.trackingCode.toUpperCase();
         const updateData = req.body;
         updateData.lastUpdated = new Date().toLocaleString();
+        
+        if (updateData.receiver?.country) {
+            updateData.destination = updateData.receiver.country;
+        }
         
         const result = await shipmentsCollection.updateOne(
             { trackingCode },
@@ -249,12 +306,19 @@ app.delete('/api/shipments/:trackingCode', async (req, res) => {
     }
 });
 
-// Serve static files
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Serve index.html for root path
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// For any other HTML file
+app.get('*.html', (req, res) => {
+    res.sendFile(path.join(__dirname, req.path));
+});
+
+// Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📦 MongoDB Atlas: ${uri}`);
+    console.log(`📁 Serving files from: ${__dirname}`);
+    console.log(`📋 Invoice fields added (Order ID, Booking Mode, Costs, Payment Status)`);
 });
