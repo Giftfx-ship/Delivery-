@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GlobeSwift | Elite Global Logistics</title>
+    <title>GlobeSwift | Elite Global Logistics Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -20,48 +20,152 @@
             overflow-x: hidden;
         }
 
-        /* 3D Animated Background */
-        .bg-3d {
+        /* ========== LOADING ANIMATION ========== */
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0f;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loader-container {
+            text-align: center;
+        }
+
+        /* 3D Box Animation */
+        .loader-3d-box {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2rem;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate3d 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        .box-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,242,254,0.8), rgba(0,224,255,0.4));
+            border: 2px solid #00f2fe;
+            box-shadow: 0 0 20px rgba(0,242,254,0.5);
+        }
+
+        .front  { transform: translateZ(50px); }
+        .back   { transform: translateZ(-50px) rotateY(180deg); }
+        .right  { transform: translateX(50px) rotateY(90deg); }
+        .left   { transform: translateX(-50px) rotateY(-90deg); }
+        .top    { transform: translateY(-50px) rotateX(90deg); }
+        .bottom { transform: translateY(50px) rotateX(-90deg); }
+
+        @keyframes rotate3d {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* Pulsing Dots */
+        .loader-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 2rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #00f2fe;
+            border-radius: 50%;
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .loader-text {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            margin-top: 1.5rem;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        .loader-sub {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* Hide main content initially */
+        .main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ========== MAIN STYLES ========== */
+        .bg-premium {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: radial-gradient(circle at 30% 40%, #0a0a0f, #030308);
+            background: radial-gradient(circle at 30% 40%, #0a0a2a, #030308);
         }
 
-        .grid-overlay {
+        .grid-3d {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(0,242,254,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,242,254,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+                linear-gradient(rgba(0,242,254,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,242,254,0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
             z-index: -1;
-            animation: gridMove 20s linear infinite;
+            animation: gridMove 25s linear infinite;
         }
 
         @keyframes gridMove {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+            100% { transform: translate(60px, 60px); }
         }
 
         /* Floating Orbs */
         .orb {
             position: fixed;
             border-radius: 50%;
-            filter: blur(60px);
+            filter: blur(70px);
             z-index: -1;
-            animation: floatOrb 15s ease-in-out infinite;
+            animation: floatOrb 18s ease-in-out infinite;
         }
 
         @keyframes floatOrb {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, -30px) scale(1.1); }
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(40px, -40px) scale(1.2); opacity: 0.5; }
         }
 
         /* Navbar */
@@ -100,29 +204,17 @@
             color: transparent;
             text-decoration: none;
             font-family: 'Space Grotesk', monospace;
-            position: relative;
+            animation: glowPulse 2s ease-in-out infinite;
         }
 
-        .logo::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, #00f2fe, transparent);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s;
-        }
-
-        .logo:hover::after {
-            transform: scaleX(1);
+        @keyframes glowPulse {
+            0%, 100% { filter: drop-shadow(0 0 3px rgba(0,242,254,0.3)); }
+            50% { filter: drop-shadow(0 0 12px rgba(0,242,254,0.6)); }
         }
 
         .nav-links {
             display: flex;
-            gap: 2.5rem;
+            gap: 2rem;
             align-items: center;
         }
 
@@ -215,14 +307,16 @@
             font-size: 0.85rem;
             margin-bottom: 2rem;
             backdrop-filter: blur(10px);
+            animation: borderPulse 2s infinite;
         }
 
-        .hero-badge i {
-            font-size: 0.8rem;
+        @keyframes borderPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,242,254,0.3); }
+            50% { box-shadow: 0 0 0 12px rgba(0,242,254,0); }
         }
 
         .hero h1 {
-            font-size: 5.2rem;
+            font-size: 5rem;
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 1.5rem;
@@ -250,7 +344,7 @@
 
         /* Premium Tracking Form */
         .tracking-premium {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
             border-radius: 70px;
             padding: 0.5rem;
@@ -347,16 +441,16 @@
         }
 
         .stat-card {
-            padding: 2rem;
-            background: rgba(255,255,255,0.02);
+            padding: 2rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
             border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
             border-color: rgba(0,242,254,0.3);
         }
 
@@ -372,8 +466,7 @@
         .stat-label {
             color: #888;
             margin-top: 0.5rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
+            font-size: 0.8rem;
             letter-spacing: 1px;
         }
 
@@ -626,191 +719,201 @@
     </style>
 </head>
 <body>
-    <div class="bg-3d"></div>
-    <div class="grid-overlay"></div>
-    
-    <!-- Floating Orbs -->
-    <div class="orb" style="width: 300px; height: 300px; background: rgba(0,242,254,0.1); top: 10%; left: -100px;"></div>
-    <div class="orb" style="width: 400px; height: 400px; background: rgba(0,242,254,0.08); bottom: 0%; right: -150px; animation-delay: -5s;"></div>
-    <div class="orb" style="width: 200px; height: 200px; background: rgba(0,242,254,0.12); top: 50%; right: 20%; animation-duration: 12s;"></div>
-
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
+    <!-- LOADING ANIMATION -->
+    <div class="loader-wrapper" id="loader">
+        <div class="loader-container">
+            <div class="loader-3d-box">
+                <div class="box-face front"></div>
+                <div class="box-face back"></div>
+                <div class="box-face right"></div>
+                <div class="box-face left"></div>
+                <div class="box-face top"></div>
+                <div class="box-face bottom"></div>
             </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="tracking.html">Track</a>
-                <a href="services.html">Services</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-                <a href="tracking.html" class="track-btn"><i class="fas fa-search"></i> Track Shipment</a>
+            <div class="loader-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
             </div>
+            <div class="loader-text">GLOBESWIFT</div>
+            <div class="loader-sub">loading intelligence systems...</div>
         </div>
-    </nav>
+    </div>
 
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">
-                <i class="fas fa-globe"></i> Elite Global Logistics Network
-                <i class="fas fa-shield-alt"></i>
-            </div>
-            <h1>Intelligent Tracking<br>Global Precision</h1>
-            <p>Enter your confidential tracking number to access real-time shipment intelligence and predictive delivery analytics.</p>
-            
-            <div class="tracking-premium">
-                <form class="tracking-form" onsubmit="trackShipment(event)">
-                    <input type="text" id="trackingNumber" placeholder="Enter tracking number" autocomplete="off">
-                    <button type="submit">
-                        <i class="fas fa-lock"></i> Track
-                    </button>
-                </form>
-            </div>
-        </div>
-    </section>
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <div class="bg-premium"></div>
+        <div class="grid-3d"></div>
+        
+        <!-- Floating Orbs -->
+        <div class="orb" style="width: 300px; height: 300px; background: rgba(0,242,254,0.1); top: 10%; left: -100px;"></div>
+        <div class="orb" style="width: 400px; height: 400px; background: rgba(0,242,254,0.08); bottom: 0%; right: -150px; animation-delay: -5s;"></div>
+        <div class="orb" style="width: 200px; height: 200px; background: rgba(0,242,254,0.12); top: 50%; right: 20%; animation-duration: 12s;"></div>
 
-    <section class="stats">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">2.8M+</div>
-                <div class="stat-label">Delivered Packages</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">190+</div>
-                <div class="stat-label">Countries Served</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">99.97%</div>
-                <div class="stat-label">On-Time Precision</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">Elite Support</div>
-            </div>
-        </div>
-    </section>
-
-    <section class="services">
-        <h2 class="section-title">Premium Services</h2>
-        <p class="section-subtitle">Executive logistics solutions for global enterprises</p>
-        <div class="services-grid">
-            <a href="air-freight.html" class="service-card">
-                <img src="images/air-freight.jpg" class="service-img" alt="Air Freight" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Air+Freight'">
-                <div class="service-content">
-                    <div class="service-icon"><i class="fas fa-plane"></i></div>
-                    <h3>Air Freight</h3>
-                    <p>IATA-certified express solutions for time-critical shipments worldwide.</p>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
                 </div>
-            </a>
-            <a href="ocean-freight.html" class="service-card">
-                <img src="images/ocean-freight.jpg" class="service-img" alt="Ocean Freight" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Ocean+Freight'">
-                <div class="service-content">
-                    <div class="service-icon"><i class="fas fa-ship"></i></div>
-                    <h3>Ocean Freight</h3>
-                    <p>FCL, LCL, and consolidation with global port coverage.</p>
-                </div>
-            </a>
-            <a href="road-transport.html" class="service-card">
-                <img src="images/road-transport.jpg" class="service-img" alt="Road Transport" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Road+Transport'">
-                <div class="service-content">
-                    <div class="service-icon"><i class="fas fa-truck"></i></div>
-                    <h3>Road Transport</h3>
-                    <p>Door-to-door delivery with real-time GPS tracking.</p>
-                </div>
-            </a>
-            <a href="warehousing.html" class="service-card">
-                <img src="images/warehousing.jpg" class="service-img" alt="Warehousing" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Warehousing'">
-                <div class="service-content">
-                    <div class="service-icon"><i class="fas fa-warehouse"></i></div>
-                    <h3>Warehousing</h3>
-                    <p>State-of-the-art storage with advanced inventory systems.</p>
-                </div>
-            </a>
-            <a href="packaging.html" class="service-card">
-                <img src="images/packaging.jpg" class="service-img" alt="Packaging" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Packaging'">
-                <div class="service-content">
-                    <div class="service-icon"><i class="fas fa-box"></i></div>
-                    <h3>Packaging</h3>
-                    <p>Custom crating and eco-friendly packaging solutions.</p>
-                </div>
-            </a>
-        </div>
-    </section>
-
-    <section class="cta">
-        <h2>Ready for Elite Logistics?</h2>
-        <p>Join the world's leading enterprises trusting GlobeSwift.</p>
-        <a href="contact.html" class="cta-btn">Contact Executive Team <i class="fas fa-arrow-right"></i></a>
-    </section>
-
-    <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>GlobeSwift</h4>
-                <p style="color: #666;">Elite logistics intelligence for the global enterprise.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="tracking.html">Track</a>
+                    <a href="services.html">Services</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="tracking.html" class="track-btn"><i class="fas fa-search"></i> Track Shipment</a>
                 </div>
             </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <a href="tracking.html">Track Shipment</a>
-                <a href="services.html">Services</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-globe"></i> Elite Global Logistics Network
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1>Intelligent Tracking<br>Global Precision</h1>
+                <p>Enter your confidential tracking number to access real-time shipment intelligence and predictive delivery analytics.</p>
+                
+                <div class="tracking-premium">
+                    <form class="tracking-form" onsubmit="trackShipment(event)">
+                        <input type="text" id="trackingNumber" placeholder="Enter tracking number" autocomplete="off">
+                        <button type="submit">
+                            <i class="fas fa-lock"></i> Track
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="footer-col">
-                <h4>Support</h4>
-                <a href="#">Elite Support 24/7</a>
-                <a href="#">Security & Compliance</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
+        </section>
+
+        <section class="stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">2.8M+</div>
+                    <div class="stat-label">DELIVERED PACKAGES</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">190+</div>
+                    <div class="stat-label">COUNTRIES SERVED</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">99.97%</div>
+                    <div class="stat-label">ON-TIME PRECISION</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">ELITE SUPPORT</div>
+                </div>
             </div>
-            <div class="footer-col">
-                <h4>Contact</h4>
-                <a href="#"><i class="fas fa-phone"></i> +1 (888) 123-ELITE</a>
-                <a href="#"><i class="fas fa-envelope"></i> elite@globeswift.com</a>
-                <a href="#"><i class="fas fa-map-marker-alt"></i> Dubai, UAE</a>
+        </section>
+
+        <section class="services">
+            <h2 class="section-title">Premium Services</h2>
+            <p class="section-subtitle">Executive logistics solutions for global enterprises</p>
+            <div class="services-grid">
+                <a href="air-freight.html" class="service-card">
+                    <img src="images/air-freight.jpg" class="service-img" alt="Air Freight" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Air+Freight'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-plane"></i></div>
+                        <h3>Air Freight</h3>
+                        <p>IATA-certified express solutions for time-critical shipments worldwide.</p>
+                    </div>
+                </a>
+                <a href="ocean-freight.html" class="service-card">
+                    <img src="images/ocean-freight.jpg" class="service-img" alt="Ocean Freight" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Ocean+Freight'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-ship"></i></div>
+                        <h3>Ocean Freight</h3>
+                        <p>FCL, LCL, and consolidation with global port coverage.</p>
+                    </div>
+                </a>
+                <a href="road-transport.html" class="service-card">
+                    <img src="images/road-transport.jpg" class="service-img" alt="Road Transport" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Road+Transport'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-truck"></i></div>
+                        <h3>Road Transport</h3>
+                        <p>Door-to-door delivery with real-time GPS tracking.</p>
+                    </div>
+                </a>
+                <a href="warehousing.html" class="service-card">
+                    <img src="images/warehousing.jpg" class="service-img" alt="Warehousing" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Warehousing'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-warehouse"></i></div>
+                        <h3>Warehousing</h3>
+                        <p>State-of-the-art storage with advanced inventory systems.</p>
+                    </div>
+                </a>
+                <a href="packaging.html" class="service-card">
+                    <img src="images/packaging.jpg" class="service-img" alt="Packaging" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Packaging'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-box"></i></div>
+                        <h3>Packaging</h3>
+                        <p>Custom crating and eco-friendly packaging solutions.</p>
+                    </div>
+                </a>
             </div>
-        </div>
-        <div class="copyright">
-            <p>&copy; 2026 GlobeSwift Logistics. All rights reserved. Elite Tracking System v3.0</p>
-        </div>
-    </footer>
+        </section>
+
+        <section class="cta">
+            <h2>Ready for Elite Logistics?</h2>
+            <p>Join the world's leading enterprises trusting GlobeSwift.</p>
+            <a href="contact.html" class="cta-btn">Contact Executive Team <i class="fas fa-arrow-right"></i></a>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>GlobeSwift</h4>
+                    <p style="color: #666;">Elite logistics intelligence for the global enterprise.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Platform</h4>
+                    <a href="tracking.html">Track Shipment</a>
+                    <a href="services.html">Services</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <a href="#">Elite Support 24/7</a>
+                    <a href="#">Security & Compliance</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <a href="#"><i class="fas fa-phone"></i> +1 (888) 123-ELITE</a>
+                    <a href="#"><i class="fas fa-envelope"></i> elite@globeswift.com</a>
+                    <a href="#"><i class="fas fa-map-marker-alt"></i> Dubai, UAE</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 GlobeSwift Logistics. All rights reserved. Elite Intelligence System v3.0</p>
+            </div>
+        </footer>
+    </div>
 
     <script>
-        // Create particles
-        for (let i = 0; i < 80; i++) {
-            const particle = document.createElement('div');
-            particle.style.position = 'fixed';
-            particle.style.width = Math.random() * 3 + 1 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.background = 'rgba(0,242,254,' + (Math.random() * 0.3) + ')';
-            particle.style.borderRadius = '50%';
-            particle.style.bottom = '-10px';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.zIndex = '-1';
-            particle.style.animation = `floatParticle ${Math.random() * 15 + 10}s linear infinite`;
-            particle.style.animationDelay = Math.random() * 10 + 's';
-            document.body.appendChild(particle);
-        }
+        // Hide loader and show content after page loads
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            const mainContent = document.getElementById('mainContent');
+            
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+                mainContent.classList.add('visible');
+            }, 1500);
+        });
 
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes floatParticle {
-                0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-                10% { opacity: 0.5; }
-                90% { opacity: 0.5; }
-                100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
+        // Navbar scroll effect
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
@@ -820,10 +923,12 @@
             }
         });
 
+        // Mobile menu toggle
         document.querySelector('.menu-toggle').addEventListener('click', () => {
             document.querySelector('.nav-links').classList.toggle('active');
         });
 
+        // Track shipment function
         function trackShipment(event) {
             event.preventDefault();
             const trackingNumber = document.getElementById('trackingNumber').value.trim();
