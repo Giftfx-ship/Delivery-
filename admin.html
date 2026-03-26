@@ -7,279 +7,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0a0f;
-            color: #fff;
-        }
-
-        /* Navbar */
         .navbar {
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 1rem 5%;
-            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); padding: 1rem 5%;
+            border-bottom: 1px solid rgba(0,242,254,0.2); position: sticky; top: 0; z-index: 100;
         }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; }
+        .logout-btn { background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 50px; color: #fff; text-decoration: none; transition: 0.3s; }
+        .logout-btn:hover { background: #ff4444; }
 
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem 5%; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .dashboard-header h1 { font-size: 2rem; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .stats-badge { background: rgba(0,242,254,0.1); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.9rem; }
+        .cloud-badge { background: rgba(0,242,254,0.2); padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.7rem; margin-left: 0.5rem; }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff, #00f2fe);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-decoration: none;
-        }
+        .btn-primary { background: linear-gradient(135deg,#00f2fe,#00e0ff); border: none; padding: 0.8rem 1.5rem; border-radius: 50px; font-weight: 600; color: #0a0a0f; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,242,254,0.3); }
 
-        .logout-btn {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            color: #fff;
-            text-decoration: none;
-            transition: 0.3s;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: rgba(10,10,15,0.95); border-radius: 24px; padding: 2rem; max-width: 650px; width: 90%; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(0,242,254,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .close-modal { font-size: 1.5rem; cursor: pointer; color: #888; }
+        .close-modal:hover { color: #fff; }
 
-        .logout-btn:hover {
-            background: #ff4444;
-        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #888; font-size: 0.85rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-family: inherit; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #00f2fe; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem 5%;
-        }
+        .section-title { margin: 1.5rem 0 1rem; color: #00f2fe; font-size: 1rem; border-left: 3px solid #00f2fe; padding-left: 0.8rem; }
 
-        /* Header */
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
+        .shipments-table { background: rgba(255,255,255,0.03); border-radius: 20px; overflow-x: auto; margin-top: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: #00f2fe; font-weight: 600; font-size: 0.85rem; }
+        tr:hover { background: rgba(255,255,255,0.02); }
 
-        .dashboard-header h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #fff, #00f2fe);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .stats-badge {
-            background: rgba(0, 242, 254, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background: linear-gradient(135deg, #00f2fe, #00e0ff);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 600;
-            color: #0a0a0f;
-            cursor: pointer;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0,242,254,0.3);
-        }
-
-        .btn-danger {
-            background: rgba(255, 68, 68, 0.2);
-            border: 1px solid #ff4444;
-            color: #ff4444;
-        }
-
-        .btn-danger:hover {
-            background: #ff4444;
-            color: #fff;
-        }
-
-        /* Form Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: rgba(10, 10, 15, 0.95);
-            border-radius: 24px;
-            padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            border: 1px solid rgba(0, 242, 254, 0.3);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .close-modal {
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #888;
-        }
-
-        .close-modal:hover {
-            color: #fff;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #888;
-            font-size: 0.85rem;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #fff;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #00f2fe;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        /* Table */
-        .shipments-table {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 20px;
-            overflow-x: auto;
-            margin-top: 1.5rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        th {
-            color: #00f2fe;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
+        .status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 50px; font-size: 0.7rem; font-weight: 600; }
         .status-order_confirmed { background: rgba(0,242,254,0.2); color: #00f2fe; }
         .status-picked { background: rgba(255,165,0,0.2); color: #ffa500; }
         .status-onway { background: rgba(0,255,255,0.2); color: #0ff; }
         .status-customs { background: rgba(255,0,0,0.2); color: #ff4444; }
         .status-delivered { background: rgba(0,255,0,0.2); color: #0f0; }
 
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
+        .duty-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.7rem; }
+        .duty-paid { background: rgba(0,255,0,0.2); color: #0f0; }
+        .duty-pending { background: rgba(255,165,0,0.2); color: #ffa500; }
 
-        .action-btn {
-            background: none;
-            border: none;
-            color: #888;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
+        .action-buttons { display: flex; gap: 0.5rem; }
+        .action-btn { background: none; border: none; color: #888; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        .action-btn:hover { color: #00f2fe; }
+        .delete-btn:hover { color: #ff4444; }
 
-        .action-btn:hover {
-            color: #00f2fe;
-        }
+        .empty-state { text-align: center; padding: 3rem; color: #666; }
+        .footer { text-align: center; padding: 2rem; color: #666; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); }
 
-        .delete-btn:hover {
-            color: #ff4444;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #666;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-            margin-top: 2rem;
-        }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -292,7 +80,7 @@
 
     <div class="container">
         <div class="dashboard-header">
-            <h1><i class="fas fa-crown"></i> Shipment Management</h1>
+            <h1><i class="fas fa-cloud-upload-alt"></i> Shipment Management <span class="cloud-badge"><i class="fas fa-database"></i> MongoDB Cloud</span></h1>
             <div class="stats-badge">
                 <i class="fas fa-box"></i> <span id="shipmentCount">0</span> Total Shipments
             </div>
@@ -302,13 +90,9 @@
             <button class="btn-primary" onclick="openAddModal()">
                 <i class="fas fa-plus"></i> Add New Shipment
             </button>
-            <button class="btn-primary" onclick="exportData()">
-                <i class="fas fa-download"></i> Export JSON
+            <button class="btn-primary" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Refresh from Cloud
             </button>
-            <button class="btn-primary" onclick="importData()">
-                <i class="fas fa-upload"></i> Import JSON
-            </button>
-            <input type="file" id="importFile" style="display: none;" accept=".json" onchange="handleImport(event)">
         </div>
 
         <div class="shipments-table">
@@ -320,11 +104,12 @@
                         <th>Sender</th>
                         <th>Receiver</th>
                         <th>Weight</th>
+                        <th>Duty Fees</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="shipmentsList">
-                    <tr><td colspan="6" class="empty-state">Loading shipments...</td></tr>
+                    <tr><td colspan="7" class="empty-state">Loading shipments from MongoDB...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -339,74 +124,51 @@
             </div>
             <form id="shipmentForm" onsubmit="saveShipment(event)">
                 <input type="hidden" id="editTracking" value="">
-                
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Tracking Number *</label>
+                        <label><i class="fas fa-barcode"></i> Tracking Number *</label>
                         <input type="text" id="trackingCode" placeholder="e.g., GL-XXXX-XXXXXXXXX" required>
                     </div>
                     <div class="form-group">
-                        <label>Status *</label>
+                        <label><i class="fas fa-truck"></i> Status *</label>
                         <select id="status">
-                            <option value="order_confirmed">Order Confirmed</option>
-                            <option value="picked">Picked by Courier</option>
-                            <option value="onway">On The Way</option>
-                            <option value="customs">Custom Hold</option>
-                            <option value="delivered">Delivered</option>
+                            <option value="order_confirmed">📦 Order Confirmed</option>
+                            <option value="picked">🚚 Picked by Courier</option>
+                            <option value="onway">✈️ On The Way</option>
+                            <option value="customs">🛃 Custom Hold</option>
+                            <option value="delivered">✅ Delivered</option>
                         </select>
                     </div>
                 </div>
 
-                <h4 style="margin: 1rem 0 0.5rem; color: #00f2fe;">Sender Information</h4>
+                <div class="section-title"><i class="fas fa-user"></i> Sender Information</div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Sender Name</label>
-                        <input type="text" id="senderName" placeholder="Full name">
-                    </div>
-                    <div class="form-group">
-                        <label>Sender Country</label>
-                        <input type="text" id="senderCountry" placeholder="Country">
-                    </div>
+                    <div class="form-group"><label>Sender Name *</label><input type="text" id="senderName" placeholder="Full name" required></div>
+                    <div class="form-group"><label>Country *</label><input type="text" id="senderCountry" placeholder="Country" required></div>
                 </div>
-                <div class="form-group">
-                    <label>Sender Phone</label>
-                    <input type="text" id="senderPhone" placeholder="Phone number">
-                </div>
+                <div class="form-group"><label>Phone</label><input type="text" id="senderPhone" placeholder="Phone number"></div>
 
-                <h4 style="margin: 1rem 0 0.5rem; color: #00f2fe;">Receiver Information</h4>
+                <div class="section-title"><i class="fas fa-user-check"></i> Receiver Information</div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Receiver Name</label>
-                        <input type="text" id="receiverName" placeholder="Full name">
-                    </div>
-                    <div class="form-group">
-                        <label>Receiver Phone</label>
-                        <input type="text" id="receiverPhone" placeholder="Phone number">
-                    </div>
+                    <div class="form-group"><label>Receiver Name *</label><input type="text" id="receiverName" placeholder="Full name" required></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="receiverPhone" placeholder="Phone number"></div>
                 </div>
-                <div class="form-group">
-                    <label>Receiver Email</label>
-                    <input type="email" id="receiverEmail" placeholder="Email address">
-                </div>
+                <div class="form-group"><label>Email</label><input type="email" id="receiverEmail" placeholder="Email address"></div>
 
-                <h4 style="margin: 1rem 0 0.5rem; color: #00f2fe;">Parcel Information</h4>
+                <div class="section-title"><i class="fas fa-box"></i> Parcel Information</div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Weight (kg)</label>
-                        <input type="text" id="weight" placeholder="e.g., 2.5 kg">
-                    </div>
-                    <div class="form-group">
-                        <label>Type</label>
-                        <input type="text" id="type" placeholder="Documents, Electronics, etc">
-                    </div>
+                    <div class="form-group"><label>Weight (kg)</label><input type="text" id="weight" placeholder="e.g., 2.5 kg"></div>
+                    <div class="form-group"><label>Type</label><input type="text" id="type" placeholder="Documents, Electronics, etc"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Duty Fees</label>
-                        <select id="dutyFees">
-                            <option value="Paid">Paid</option>
-                            <option value="Pending">Pending</option>
+                        <label><i class="fas fa-money-bill-wave"></i> DUTY FEES *</label>
+                        <select id="dutyFees" required>
+                            <option value="Paid">✅ Paid</option>
+                            <option value="Pending">⏳ Pending</option>
                         </select>
+                        <small style="color:#888;">Admin sets duty fees status</small>
                     </div>
                     <div class="form-group">
                         <label>Expected Delivery</label>
@@ -419,140 +181,80 @@
                 </div>
 
                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1.5rem;">
-                    <i class="fas fa-save"></i> Save Shipment
+                    <i class="fas fa-cloud-upload-alt"></i> Save to MongoDB Cloud
                 </button>
             </form>
         </div>
     </div>
 
     <footer class="footer">
-        <p>GlobeSwift Admin Panel - Manage Shipments</p>
+        <p><i class="fas fa-cloud"></i> GlobeSwift Admin | All shipments stored in MongoDB Cloud - Accessible from ANY browser, ANY device</p>
     </footer>
 
     <script>
-        // Default shipments data
+        const API_URL = window.location.origin;
         let shipments = {};
 
-        // Load from localStorage
-        function loadShipments() {
-            const saved = localStorage.getItem('globeswift_shipments');
-            if (saved) {
-                shipments = JSON.parse(saved);
-            } else {
-                // Default shipments from tracking-result.html
-                shipments = {
-                    'GL-3722-TAB2NLX6': {
-                        status: 'order_confirmed',
-                        statusText: 'Order Confirmed',
-                        statusDesc: 'Your shipment has been confirmed and is being processed.',
-                        lastUpdated: new Date().toLocaleString(),
-                        sender: { name: 'Prince Hamdan Fazza', country: 'United Arab Emirates', phone: 'N/A' },
-                        receiver: { name: 'Aleksandar Molan', phone: '+381692609980', email: 'molan-aleksandar@hotmail.com' },
-                        parcel: { weight: '2.5 kg', type: 'Documents', dutyFees: 'Paid', pickupDate: new Date().toLocaleString(), expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Order Confirmed' },
-                        timeline: [
-                            { date: new Date().toLocaleString(), title: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.', completed: true, active: true },
-                            { date: 'Pending', title: 'Picked by Courier', desc: 'Courier will pick up the package', completed: false, active: false },
-                            { date: 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: false, active: false },
-                            { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
-                        ],
-                        origin: 'United Arab Emirates',
-                        destination: 'Serbia',
-                        coordinates: [25.2048, 55.2708]
-                    },
-                    'GL-4521-PK9M3RT7': {
-                        status: 'picked',
-                        statusText: 'Picked by Courier',
-                        statusDesc: 'Your package has been picked up by our courier.',
-                        lastUpdated: new Date().toLocaleString(),
-                        sender: { name: 'Ahmed Al Maktoum', country: 'United Arab Emirates', phone: '+971 50 123 4567' },
-                        receiver: { name: 'Maria Garcia', phone: '+34 612 345 678', email: 'maria.garcia@email.com' },
-                        parcel: { weight: '5.2 kg', type: 'Electronics', dutyFees: 'Paid', pickupDate: new Date().toLocaleString(), expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Picked by Courier' },
-                        timeline: [
-                            { date: new Date().toLocaleString(), title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
-                            { date: new Date().toLocaleString(), title: 'Picked by Courier', desc: 'Package picked up by courier', completed: true, active: true },
-                            { date: 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: false, active: false },
-                            { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
-                        ],
-                        origin: 'United Arab Emirates',
-                        destination: 'Spain',
-                        coordinates: [25.2048, 55.2708]
-                    }
-                };
-                saveShipments();
+        // ============================================
+        // LOAD SHIPMENTS FROM MONGODB
+        // ============================================
+        async function loadShipments() {
+            try {
+                const response = await fetch(`${API_URL}/api/shipments`);
+                if (!response.ok) throw new Error('Failed to fetch');
+                shipments = await response.json();
+                updateTable();
+            } catch (error) {
+                console.error('Error loading shipments:', error);
+                document.getElementById('shipmentsList').innerHTML = '<tr><td colspan="7" class="empty-state">❌ Error loading from MongoDB. Make sure server is running.</td></tr>';
             }
-            updateTable();
-        }
-
-        function saveShipments() {
-            localStorage.setItem('globeswift_shipments', JSON.stringify(shipments));
-            updateTable();
         }
 
         function updateTable() {
             const tbody = document.getElementById('shipmentsList');
-            const count = Object.keys(shipments).length;
+            const codes = Object.keys(shipments);
+            const count = codes.length;
             document.getElementById('shipmentCount').innerText = count;
-            
+
             if (count === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No shipments found. Click "Add New Shipment" to create one.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No shipments found. Click "Add New Shipment" to create one.</td></tr>';
                 return;
             }
-            
-            tbody.innerHTML = Object.entries(shipments).map(([code, data]) => `
-                <tr>
-                    <td><code style="font-family: monospace;">${code}</code></td>
-                    <td><span class="status-badge status-${data.status}">${data.statusText}</span></td>
-                    <td>${data.sender?.name || 'N/A'}<br><small>${data.sender?.country || ''}</small></td>
-                    <td>${data.receiver?.name || 'N/A'}</td>
-                    <td>${data.parcel?.weight || 'N/A'}</td>
-                    <td class="action-buttons">
-                        <button class="action-btn" onclick="editShipment('${code}')"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" onclick="deleteShipment('${code}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+
+            tbody.innerHTML = codes.map(code => {
+                const data = shipments[code];
+                const dutyClass = data.parcel?.dutyFees === 'Paid' ? 'duty-paid' : 'duty-pending';
+                return `
+                    <tr>
+                        <td><code style="font-family: monospace;">${code}</code></td>
+                        <td><span class="status-badge status-${data.status}">${data.statusText || data.status}</span></td>
+                        <td>${data.sender?.name || 'N/A'}<br><small>${data.sender?.country || ''}</small></td>
+                        <td>${data.receiver?.name || 'N/A'}</td>
+                        <td>${data.parcel?.weight || 'N/A'}</td>
+                        <td><span class="duty-badge ${dutyClass}"><i class="fas ${data.parcel?.dutyFees === 'Paid' ? 'fa-check-circle' : 'fa-clock'}"></i> ${data.parcel?.dutyFees || 'N/A'}</span></td>
+                        <td class="action-buttons">
+                            <button class="action-btn" onclick="editShipment('${code}')"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete-btn" onclick="deleteShipment('${code}')"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function openAddModal() {
-            document.getElementById('modalTitle').innerText = 'Add New Shipment';
-            document.getElementById('shipmentForm').reset();
-            document.getElementById('editTracking').value = '';
-            document.getElementById('status').value = 'order_confirmed';
-            document.getElementById('dutyFees').value = 'Paid';
-            document.getElementById('coordinates').value = '25.2048, 55.2708';
-            document.getElementById('shipmentModal').style.display = 'flex';
+        function refreshData() {
+            loadShipments();
         }
 
-        function editShipment(code) {
-            const data = shipments[code];
-            if (!data) return;
-            
-            document.getElementById('modalTitle').innerText = 'Edit Shipment';
-            document.getElementById('editTracking').value = code;
-            document.getElementById('trackingCode').value = code;
-            document.getElementById('status').value = data.status;
-            document.getElementById('senderName').value = data.sender?.name || '';
-            document.getElementById('senderCountry').value = data.sender?.country || '';
-            document.getElementById('senderPhone').value = data.sender?.phone || '';
-            document.getElementById('receiverName').value = data.receiver?.name || '';
-            document.getElementById('receiverPhone').value = data.receiver?.phone || '';
-            document.getElementById('receiverEmail').value = data.receiver?.email || '';
-            document.getElementById('weight').value = data.parcel?.weight || '';
-            document.getElementById('type').value = data.parcel?.type || '';
-            document.getElementById('dutyFees').value = data.parcel?.dutyFees || 'Paid';
-            document.getElementById('expectedDelivery').value = data.parcel?.expectedDelivery || '';
-            document.getElementById('coordinates').value = data.coordinates ? data.coordinates.join(', ') : '25.2048, 55.2708';
-            
-            document.getElementById('shipmentModal').style.display = 'flex';
-        }
-
-        function saveShipment(event) {
+        // ============================================
+        // SAVE SHIPMENT TO MONGODB
+        // ============================================
+        async function saveShipment(event) {
             event.preventDefault();
-            
+
             const trackingCode = document.getElementById('trackingCode').value.trim().toUpperCase();
             const editTracking = document.getElementById('editTracking').value;
             const status = document.getElementById('status').value;
-            
+
             // Status mapping
             const statusMap = {
                 'order_confirmed': { text: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.' },
@@ -561,7 +263,7 @@
                 'customs': { text: 'Custom Hold', desc: 'Shipment is being held for customs clearance.' },
                 'delivered': { text: 'Delivered', desc: 'Your package has been successfully delivered.' }
             };
-            
+
             // Parse coordinates
             let coords = [25.2048, 55.2708];
             const coordsInput = document.getElementById('coordinates').value;
@@ -571,9 +273,9 @@
                     coords = parts;
                 }
             }
-            
+
             const now = new Date().toLocaleString();
-            
+
             const newShipment = {
                 status: status,
                 statusText: statusMap[status].text,
@@ -592,7 +294,7 @@
                 parcel: {
                     weight: document.getElementById('weight').value || 'N/A',
                     type: document.getElementById('type').value || 'N/A',
-                    dutyFees: document.getElementById('dutyFees').value,
+                    dutyFees: document.getElementById('dutyFees').value,  // ← DUTY FEES FROM ADMIN
                     pickupDate: now,
                     expectedDelivery: document.getElementById('expectedDelivery').value || 'Pending',
                     trackingStatus: statusMap[status].text
@@ -608,56 +310,94 @@
                 destination: 'Unknown',
                 coordinates: coords
             };
-            
-            // If editing, remove old
-            if (editTracking && editTracking !== trackingCode) {
-                delete shipments[editTracking];
-            }
-            
-            shipments[trackingCode] = newShipment;
-            saveShipments();
-            closeModal();
-        }
 
-        function deleteShipment(code) {
-            if (confirm(`Delete shipment ${code}? This cannot be undone.`)) {
-                delete shipments[code];
-                saveShipments();
-            }
-        }
+            try {
+                let url = `${API_URL}/api/shipments`;
+                let method = 'POST';
 
-        function exportData() {
-            const dataStr = JSON.stringify(shipments, null, 2);
-            const blob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `globeswift_shipments_${new Date().toISOString().slice(0,19)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importData() {
-            document.getElementById('importFile').click();
-        }
-
-        function handleImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    shipments = {...shipments, ...imported};
-                    saveShipments();
-                    alert('Import successful!');
-                } catch(err) {
-                    alert('Invalid JSON file');
+                // If editing existing shipment
+                if (editTracking) {
+                    if (editTracking !== trackingCode) {
+                        // Delete old one first
+                        await fetch(`${API_URL}/api/shipments/${editTracking}`, { method: 'DELETE' });
+                    }
+                    url = `${API_URL}/api/shipments/${trackingCode}`;
+                    method = 'PUT';
                 }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newShipment)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to save');
+                }
+
+                alert(`✓ Shipment ${trackingCode} saved to MongoDB Cloud!`);
+                closeModal();
+                loadShipments();
+                document.getElementById('shipmentForm').reset();
+                document.getElementById('status').value = 'order_confirmed';
+                document.getElementById('dutyFees').value = 'Paid';
+                document.getElementById('coordinates').value = '25.2048, 55.2708';
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // DELETE SHIPMENT FROM MONGODB
+        // ============================================
+        async function deleteShipment(code) {
+            if (confirm(`⚠️ Delete shipment ${code} from MongoDB Cloud? This cannot be undone.`)) {
+                try {
+                    const response = await fetch(`${API_URL}/api/shipments/${code}`, { method: 'DELETE' });
+                    if (!response.ok) throw new Error('Delete failed');
+                    alert(`✓ Shipment ${code} deleted from cloud!`);
+                    loadShipments();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+
+        // ============================================
+        // EDIT SHIPMENT
+        // ============================================
+        function editShipment(code) {
+            const data = shipments[code];
+            if (!data) return;
+
+            document.getElementById('modalTitle').innerText = 'Edit Shipment';
+            document.getElementById('editTracking').value = code;
+            document.getElementById('trackingCode').value = code;
+            document.getElementById('status').value = data.status;
+            document.getElementById('senderName').value = data.sender?.name || '';
+            document.getElementById('senderCountry').value = data.sender?.country || '';
+            document.getElementById('senderPhone').value = data.sender?.phone || '';
+            document.getElementById('receiverName').value = data.receiver?.name || '';
+            document.getElementById('receiverPhone').value = data.receiver?.phone || '';
+            document.getElementById('receiverEmail').value = data.receiver?.email || '';
+            document.getElementById('weight').value = data.parcel?.weight || '';
+            document.getElementById('type').value = data.parcel?.type || '';
+            document.getElementById('dutyFees').value = data.parcel?.dutyFees || 'Paid';
+            document.getElementById('expectedDelivery').value = data.parcel?.expectedDelivery || '';
+            document.getElementById('coordinates').value = data.coordinates ? data.coordinates.join(', ') : '25.2048, 55.2708';
+
+            document.getElementById('shipmentModal').style.display = 'flex';
+        }
+
+        function openAddModal() {
+            document.getElementById('modalTitle').innerText = 'Add New Shipment';
+            document.getElementById('shipmentForm').reset();
+            document.getElementById('editTracking').value = '';
+            document.getElementById('status').value = 'order_confirmed';
+            document.getElementById('dutyFees').value = 'Paid';
+            document.getElementById('coordinates').value = '25.2048, 55.2708';
+            document.getElementById('shipmentModal').style.display = 'flex';
         }
 
         function closeModal() {
@@ -669,22 +409,18 @@
             window.location.href = 'admin-login.html';
         }
 
-        // Check login
         function checkLogin() {
             if (!localStorage.getItem('adminLoggedIn')) {
                 window.location.href = 'admin-login.html';
             }
         }
-        
+
         checkLogin();
         loadShipments();
-        
-        // Close modal on outside click
+
         window.onclick = function(event) {
             const modal = document.getElementById('shipmentModal');
-            if (event.target === modal) {
-                closeModal();
-            }
+            if (event.target === modal) closeModal();
         }
     </script>
 </body>
