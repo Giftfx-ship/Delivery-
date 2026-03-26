@@ -29,14 +29,14 @@
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,242,254,0.3); }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: rgba(10,10,15,0.95); border-radius: 24px; padding: 2rem; max-width: 650px; width: 90%; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(0,242,254,0.3); }
+        .modal-content { background: rgba(10,10,15,0.95); border-radius: 24px; padding: 2rem; max-width: 750px; width: 90%; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(0,242,254,0.3); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .close-modal { font-size: 1.5rem; cursor: pointer; color: #888; }
         .close-modal:hover { color: #fff; }
 
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; color: #888; font-size: 0.85rem; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-family: inherit; }
+        .form-group input, .form-group select { width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-family: inherit; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: #00f2fe; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
@@ -104,12 +104,13 @@
                         <th>Sender</th>
                         <th>Receiver</th>
                         <th>Weight</th>
-                        <th>Duty Fees</th>
+                        <th>Duty</th>
+                        <th>Total</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="shipmentsList">
-                    <tr><td colspan="7" class="empty-state">Loading shipments from MongoDB...</td></tr>
+                    <tr><td colspan="8" class="empty-state">Loading shipments from MongoDB...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -128,7 +129,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label><i class="fas fa-barcode"></i> Tracking Number *</label>
-                        <input type="text" id="trackingCode" placeholder="e.g., GL-XXXX-XXXXXXXXX" required>
+                        <input type="text" id="trackingCode" placeholder="GL-XXXX-XXXXXXXXX" required>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-truck"></i> Status *</label>
@@ -144,160 +145,139 @@
 
                 <div class="section-title"><i class="fas fa-user"></i> Sender Information</div>
                 <div class="form-row">
-                    <div class="form-group"><label>Sender Name *</label><input type="text" id="senderName" placeholder="Full name" required></div>
-                    <div class="form-group"><label>Country *</label><input type="text" id="senderCountry" placeholder="Country" required></div>
+                    <div class="form-group"><label>Sender Name *</label><input type="text" id="senderName" required></div>
+                    <div class="form-group"><label>Country *</label><input type="text" id="senderCountry" required></div>
                 </div>
-                <div class="form-group"><label>Phone</label><input type="text" id="senderPhone" placeholder="Phone number"></div>
+                <div class="form-group"><label>Address</label><input type="text" id="senderAddress" placeholder="Full address"></div>
+                <div class="form-group"><label>Phone</label><input type="text" id="senderPhone"></div>
 
                 <div class="section-title"><i class="fas fa-user-check"></i> Receiver Information</div>
                 <div class="form-row">
-                    <div class="form-group"><label>Receiver Name *</label><input type="text" id="receiverName" placeholder="Full name" required></div>
-                    <div class="form-group"><label>Phone</label><input type="text" id="receiverPhone" placeholder="Phone number"></div>
+                    <div class="form-group"><label>Receiver Name *</label><input type="text" id="receiverName" required></div>
+                    <div class="form-group"><label>Country *</label><input type="text" id="receiverCountry" required></div>
                 </div>
-                <div class="form-group"><label>Email</label><input type="email" id="receiverEmail" placeholder="Email address"></div>
+                <div class="form-group"><label>Address</label><input type="text" id="receiverAddress" placeholder="Full address"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Phone</label><input type="text" id="receiverPhone"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="receiverEmail"></div>
+                </div>
 
                 <div class="section-title"><i class="fas fa-box"></i> Parcel Information</div>
                 <div class="form-row">
-                    <div class="form-group"><label>Weight (kg)</label><input type="text" id="weight" placeholder="e.g., 2.5 kg"></div>
-                    <div class="form-group"><label>Type</label><input type="text" id="type" placeholder="Documents, Electronics, etc"></div>
+                    <div class="form-group"><label>Weight (kg)</label><input type="text" id="weight" placeholder="2.5 kg"></div>
+                    <div class="form-group"><label>Type</label><input type="text" id="type" placeholder="Documents, Electronics"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="fas fa-money-bill-wave"></i> DUTY FEES *</label>
-                        <select id="dutyFees" required>
-                            <option value="Paid">✅ Paid</option>
-                            <option value="Pending">⏳ Pending</option>
-                        </select>
-                        <small style="color:#888;">Admin sets duty fees status</small>
-                    </div>
-                    <div class="form-group">
-                        <label>Expected Delivery</label>
-                        <input type="text" id="expectedDelivery" placeholder="e.g., Mar 28, 2026">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Origin Coordinates (for map)</label>
-                    <input type="text" id="coordinates" placeholder="e.g., 25.2048, 55.2708">
+                    <div class="form-group"><label>DUTY FEES *</label><select id="dutyFees"><option value="Paid">✅ Paid</option><option value="Pending">⏳ Pending</option></select></div>
+                    <div class="form-group"><label>Expected Delivery</label><input type="text" id="expectedDelivery" placeholder="Mar 28, 2026"></div>
                 </div>
 
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1.5rem;">
-                    <i class="fas fa-cloud-upload-alt"></i> Save to MongoDB Cloud
-                </button>
+                <div class="section-title"><i class="fas fa-file-invoice-dollar"></i> Invoice / Payment Details</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Order ID</label><input type="text" id="orderId" placeholder="e.g., 326"></div>
+                    <div class="form-group"><label>Booking Mode</label><select id="bookingMode"><option value="ToPay">ToPay</option><option value="Prepaid">Prepaid</option><option value="Standard">Standard</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Shipping Cost (EUR)</label><input type="text" id="shipmentCost" placeholder="EUR 300"></div>
+                    <div class="form-group"><label>Clearance Cost (EUR)</label><input type="text" id="clearanceCost" placeholder="EUR 350"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Total Amount (EUR)</label><input type="text" id="totalAmount" placeholder="EUR 650"></div>
+                    <div class="form-group"><label>Payment Status</label><select id="paymentStatus"><option value="To Pay on Delivery">To Pay on Delivery</option><option value="Paid">Paid</option><option value="Pending">Pending</option></select></div>
+                </div>
+                <div class="form-group"><label>Origin Coordinates</label><input type="text" id="coordinates" placeholder="25.2048, 55.2708"></div>
+
+                <button type="submit" class="btn-primary" style="width:100%; margin-top:1.5rem;"><i class="fas fa-cloud-upload-alt"></i> Save to MongoDB Cloud</button>
             </form>
         </div>
     </div>
 
     <footer class="footer">
-        <p><i class="fas fa-cloud"></i> GlobeSwift Admin | All shipments stored in MongoDB Cloud - Accessible from ANY browser, ANY device</p>
+        <p><i class="fas fa-cloud"></i> GlobeSwift Admin | All shipments stored in MongoDB Cloud</p>
     </footer>
 
     <script>
         const API_URL = window.location.origin;
         let shipments = {};
 
-        // ============================================
-        // LOAD SHIPMENTS FROM MONGODB
-        // ============================================
         async function loadShipments() {
             try {
-                const response = await fetch(`${API_URL}/api/shipments`);
-                if (!response.ok) throw new Error('Failed to fetch');
-                shipments = await response.json();
+                const res = await fetch(`${API_URL}/api/shipments`);
+                if (!res.ok) throw new Error();
+                shipments = await res.json();
                 updateTable();
-            } catch (error) {
-                console.error('Error loading shipments:', error);
-                document.getElementById('shipmentsList').innerHTML = '<tr><td colspan="7" class="empty-state">❌ Error loading from MongoDB. Make sure server is running.</td></tr>';
-            }
+            } catch(e) { document.getElementById('shipmentsList').innerHTML = '<tr><td colspan="8" class="empty-state">❌ Error loading from MongoDB</td></tr>'; }
         }
 
         function updateTable() {
             const tbody = document.getElementById('shipmentsList');
             const codes = Object.keys(shipments);
-            const count = codes.length;
-            document.getElementById('shipmentCount').innerText = count;
-
-            if (count === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No shipments found. Click "Add New Shipment" to create one.</td></tr>';
-                return;
-            }
-
+            document.getElementById('shipmentCount').innerText = codes.length;
+            if (codes.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No shipments found</td></tr>'; return; }
             tbody.innerHTML = codes.map(code => {
-                const data = shipments[code];
-                const dutyClass = data.parcel?.dutyFees === 'Paid' ? 'duty-paid' : 'duty-pending';
-                return `
-                    <tr>
-                        <td><code style="font-family: monospace;">${code}</code></td>
-                        <td><span class="status-badge status-${data.status}">${data.statusText || data.status}</span></td>
-                        <td>${data.sender?.name || 'N/A'}<br><small>${data.sender?.country || ''}</small></td>
-                        <td>${data.receiver?.name || 'N/A'}</td>
-                        <td>${data.parcel?.weight || 'N/A'}</td>
-                        <td><span class="duty-badge ${dutyClass}"><i class="fas ${data.parcel?.dutyFees === 'Paid' ? 'fa-check-circle' : 'fa-clock'}"></i> ${data.parcel?.dutyFees || 'N/A'}</span></td>
-                        <td class="action-buttons">
-                            <button class="action-btn" onclick="editShipment('${code}')"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete-btn" onclick="deleteShipment('${code}')"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
+                const d = shipments[code];
+                const dutyClass = d.parcel?.dutyFees === 'Paid' ? 'duty-paid' : 'duty-pending';
+                const inv = d.invoice || {};
+                return `<tr>
+                    <td><code>${code}</code></td>
+                    <td><span class="status-badge status-${d.status}">${d.statusText || d.status}</span></td>
+                    <td>${d.sender?.name || 'N/A'}<br><small>${d.sender?.country || ''}</small></td>
+                    <td>${d.receiver?.name || 'N/A'}<br><small>${d.receiver?.country || ''}</small></td>
+                    <td>${d.parcel?.weight || 'N/A'}</td>
+                    <td><span class="duty-badge ${dutyClass}">${d.parcel?.dutyFees || 'N/A'}</span></td>
+                    <td>${inv.totalAmount || 'N/A'}</td>
+                    <td class="action-buttons"><button class="action-btn" onclick="editShipment('${code}')"><i class="fas fa-edit"></i></button><button class="action-btn delete-btn" onclick="deleteShipment('${code}')"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
             }).join('');
         }
 
-        function refreshData() {
-            loadShipments();
-        }
+        function refreshData() { loadShipments(); }
 
-        // ============================================
-        // SAVE SHIPMENT TO MONGODB
-        // ============================================
         async function saveShipment(event) {
             event.preventDefault();
-
             const trackingCode = document.getElementById('trackingCode').value.trim().toUpperCase();
             const editTracking = document.getElementById('editTracking').value;
             const status = document.getElementById('status').value;
-
-            // Status mapping
-            const statusMap = {
-                'order_confirmed': { text: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.' },
-                'picked': { text: 'Picked by Courier', desc: 'Your package has been picked up by our courier.' },
-                'onway': { text: 'On The Way', desc: 'Your shipment is in transit and moving through our network.' },
-                'customs': { text: 'Custom Hold', desc: 'Shipment is being held for customs clearance.' },
-                'delivered': { text: 'Delivered', desc: 'Your package has been successfully delivered.' }
-            };
-
-            // Parse coordinates
-            let coords = [25.2048, 55.2708];
-            const coordsInput = document.getElementById('coordinates').value;
-            if (coordsInput) {
-                const parts = coordsInput.split(',').map(Number);
-                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-                    coords = parts;
-                }
-            }
-
+            const statusMap = { 'order_confirmed':'Order Confirmed','picked':'Picked by Courier','onway':'On The Way','customs':'Custom Hold','delivered':'Delivered' };
+            let coords = [25.2048,55.2708];
+            const ci = document.getElementById('coordinates').value;
+            if(ci){ let p=ci.split(',').map(Number); if(p.length===2 && !isNaN(p[0]) && !isNaN(p[1])) coords=p; }
             const now = new Date().toLocaleString();
 
             const newShipment = {
                 status: status,
-                statusText: statusMap[status].text,
-                statusDesc: statusMap[status].desc,
+                statusText: statusMap[status],
+                statusDesc: `Your shipment is ${statusMap[status].toLowerCase()}`,
                 lastUpdated: now,
                 sender: {
                     name: document.getElementById('senderName').value || 'N/A',
                     country: document.getElementById('senderCountry').value || 'Unknown',
+                    address: document.getElementById('senderAddress').value || '',
                     phone: document.getElementById('senderPhone').value || 'N/A'
                 },
                 receiver: {
                     name: document.getElementById('receiverName').value || 'N/A',
+                    country: document.getElementById('receiverCountry').value || 'Unknown',
+                    address: document.getElementById('receiverAddress').value || '',
                     phone: document.getElementById('receiverPhone').value || 'N/A',
                     email: document.getElementById('receiverEmail').value || 'N/A'
                 },
                 parcel: {
                     weight: document.getElementById('weight').value || 'N/A',
                     type: document.getElementById('type').value || 'N/A',
-                    dutyFees: document.getElementById('dutyFees').value,  // ← DUTY FEES FROM ADMIN
+                    dutyFees: document.getElementById('dutyFees').value,
                     pickupDate: now,
                     expectedDelivery: document.getElementById('expectedDelivery').value || 'Pending',
-                    trackingStatus: statusMap[status].text
+                    trackingStatus: statusMap[status]
+                },
+                invoice: {
+                    orderId: document.getElementById('orderId').value || Math.floor(Math.random() * 9000 + 1000).toString(),
+                    bookingMode: document.getElementById('bookingMode').value,
+                    shipmentCost: document.getElementById('shipmentCost').value || 'N/A',
+                    clearanceCost: document.getElementById('clearanceCost').value || 'N/A',
+                    totalAmount: document.getElementById('totalAmount').value || 'N/A',
+                    paymentStatus: document.getElementById('paymentStatus').value,
+                    paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery']
                 },
                 timeline: [
                     { date: now, title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: status !== 'order_confirmed', active: status === 'order_confirmed' },
@@ -305,37 +285,21 @@
                     { date: status === 'onway' || status === 'customs' || status === 'delivered' ? now : 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: status === 'onway' || status === 'customs' || status === 'delivered', active: status === 'onway' },
                     { date: status === 'customs' ? now : 'Pending', title: 'Custom Hold', desc: 'Customs clearance', completed: status === 'customs' || status === 'delivered', active: status === 'customs' },
                     { date: status === 'delivered' ? now : 'Pending', title: 'Delivered', desc: 'Package delivered', completed: status === 'delivered', active: status === 'delivered' }
-                ].filter(item => item.title !== 'Custom Hold' || status !== 'order_confirmed'),
+                ].filter(t => t.title !== 'Custom Hold' || status !== 'order_confirmed'),
                 origin: document.getElementById('senderCountry').value || 'Unknown',
-                destination: 'Unknown',
+                destination: document.getElementById('receiverCountry').value || 'Unknown',
                 coordinates: coords
             };
 
             try {
-                let url = `${API_URL}/api/shipments`;
-                let method = 'POST';
-
-                // If editing existing shipment
+                let url = `${API_URL}/api/shipments`, method = 'POST';
                 if (editTracking) {
-                    if (editTracking !== trackingCode) {
-                        // Delete old one first
-                        await fetch(`${API_URL}/api/shipments/${editTracking}`, { method: 'DELETE' });
-                    }
+                    if (editTracking !== trackingCode) await fetch(`${API_URL}/api/shipments/${editTracking}`, { method: 'DELETE' });
                     url = `${API_URL}/api/shipments/${trackingCode}`;
                     method = 'PUT';
                 }
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newShipment)
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to save');
-                }
-
+                const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newShipment) });
+                if (!response.ok) throw new Error('Failed to save');
                 alert(`✓ Shipment ${trackingCode} saved to MongoDB Cloud!`);
                 closeModal();
                 loadShipments();
@@ -343,50 +307,47 @@
                 document.getElementById('status').value = 'order_confirmed';
                 document.getElementById('dutyFees').value = 'Paid';
                 document.getElementById('coordinates').value = '25.2048, 55.2708';
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+            } catch (error) { alert('Error: ' + error.message); }
         }
 
-        // ============================================
-        // DELETE SHIPMENT FROM MONGODB
-        // ============================================
         async function deleteShipment(code) {
-            if (confirm(`⚠️ Delete shipment ${code} from MongoDB Cloud? This cannot be undone.`)) {
+            if (confirm(`⚠️ Delete shipment ${code}?`)) {
                 try {
-                    const response = await fetch(`${API_URL}/api/shipments/${code}`, { method: 'DELETE' });
-                    if (!response.ok) throw new Error('Delete failed');
-                    alert(`✓ Shipment ${code} deleted from cloud!`);
+                    await fetch(`${API_URL}/api/shipments/${code}`, { method: 'DELETE' });
+                    alert(`✓ Shipment ${code} deleted`);
                     loadShipments();
-                } catch (error) {
-                    alert('Error: ' + error.message);
-                }
+                } catch(e) { alert('Error'); }
             }
         }
 
-        // ============================================
-        // EDIT SHIPMENT
-        // ============================================
         function editShipment(code) {
-            const data = shipments[code];
-            if (!data) return;
-
+            const d = shipments[code];
+            if (!d) return;
             document.getElementById('modalTitle').innerText = 'Edit Shipment';
             document.getElementById('editTracking').value = code;
             document.getElementById('trackingCode').value = code;
-            document.getElementById('status').value = data.status;
-            document.getElementById('senderName').value = data.sender?.name || '';
-            document.getElementById('senderCountry').value = data.sender?.country || '';
-            document.getElementById('senderPhone').value = data.sender?.phone || '';
-            document.getElementById('receiverName').value = data.receiver?.name || '';
-            document.getElementById('receiverPhone').value = data.receiver?.phone || '';
-            document.getElementById('receiverEmail').value = data.receiver?.email || '';
-            document.getElementById('weight').value = data.parcel?.weight || '';
-            document.getElementById('type').value = data.parcel?.type || '';
-            document.getElementById('dutyFees').value = data.parcel?.dutyFees || 'Paid';
-            document.getElementById('expectedDelivery').value = data.parcel?.expectedDelivery || '';
-            document.getElementById('coordinates').value = data.coordinates ? data.coordinates.join(', ') : '25.2048, 55.2708';
-
+            document.getElementById('status').value = d.status;
+            document.getElementById('senderName').value = d.sender?.name || '';
+            document.getElementById('senderCountry').value = d.sender?.country || '';
+            document.getElementById('senderAddress').value = d.sender?.address || '';
+            document.getElementById('senderPhone').value = d.sender?.phone || '';
+            document.getElementById('receiverName').value = d.receiver?.name || '';
+            document.getElementById('receiverCountry').value = d.receiver?.country || '';
+            document.getElementById('receiverAddress').value = d.receiver?.address || '';
+            document.getElementById('receiverPhone').value = d.receiver?.phone || '';
+            document.getElementById('receiverEmail').value = d.receiver?.email || '';
+            document.getElementById('weight').value = d.parcel?.weight || '';
+            document.getElementById('type').value = d.parcel?.type || '';
+            document.getElementById('dutyFees').value = d.parcel?.dutyFees || 'Paid';
+            document.getElementById('expectedDelivery').value = d.parcel?.expectedDelivery || '';
+            const inv = d.invoice || {};
+            document.getElementById('orderId').value = inv.orderId || '';
+            document.getElementById('bookingMode').value = inv.bookingMode || 'ToPay';
+            document.getElementById('shipmentCost').value = inv.shipmentCost || '';
+            document.getElementById('clearanceCost').value = inv.clearanceCost || '';
+            document.getElementById('totalAmount').value = inv.totalAmount || '';
+            document.getElementById('paymentStatus').value = inv.paymentStatus || 'To Pay on Delivery';
+            document.getElementById('coordinates').value = d.coordinates ? d.coordinates.join(', ') : '25.2048, 55.2708';
             document.getElementById('shipmentModal').style.display = 'flex';
         }
 
@@ -396,32 +357,18 @@
             document.getElementById('editTracking').value = '';
             document.getElementById('status').value = 'order_confirmed';
             document.getElementById('dutyFees').value = 'Paid';
+            document.getElementById('bookingMode').value = 'ToPay';
+            document.getElementById('paymentStatus').value = 'To Pay on Delivery';
             document.getElementById('coordinates').value = '25.2048, 55.2708';
             document.getElementById('shipmentModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('shipmentModal').style.display = 'none';
-        }
-
-        function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            window.location.href = 'admin-login.html';
-        }
-
-        function checkLogin() {
-            if (!localStorage.getItem('adminLoggedIn')) {
-                window.location.href = 'admin-login.html';
-            }
-        }
-
+        function closeModal() { document.getElementById('shipmentModal').style.display = 'none'; }
+        function logout() { localStorage.removeItem('adminLoggedIn'); window.location.href = 'admin-login.html'; }
+        function checkLogin() { if (!localStorage.getItem('adminLoggedIn')) window.location.href = 'admin-login.html'; }
         checkLogin();
         loadShipments();
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('shipmentModal');
-            if (event.target === modal) closeModal();
-        }
+        window.onclick = function(e) { const modal = document.getElementById('shipmentModal'); if (e.target === modal) closeModal(); }
     </script>
 </body>
 </html>
