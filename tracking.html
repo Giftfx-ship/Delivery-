@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Shipment - GlobeSwift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 5%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 5%;
+        }
+
+        .tracking-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tracking-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .tracking-form-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .tracking-form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tracking-form input {
+            flex: 1;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            font-size: 1rem;
+            color: #fff;
+            font-family: monospace;
+        }
+
+        .tracking-form button {
+            padding: 1.2rem 2rem;
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .demo-codes {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .demo-code {
+            background: rgba(0, 242, 254, 0.1);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .demo-code:hover {
+            background: rgba(0, 242, 254, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .recent-tracking {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .recent-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .recent-item:hover {
+            background: rgba(0, 242, 254, 0.1);
+        }
+
+        .footer {
+            background: #050508;
+            padding: 2rem 5%;
+            text-align: center;
+            color: #666;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .tracking-form {
+                flex-direction: column;
+            }
+            .tracking-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
+            <a href="index.html" style="color: #00f2fe;"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tracking-header">
+            <h1>Track Your Shipment</h1>
+            <p style="color: #aaa;">Enter your tracking number to get real-time updates</p>
+        </div>
+
+        <div class="tracking-form-box">
+            <form class="tracking-form" onsubmit="trackShipment(event)">
+                <input type="text" id="trackingNumber" placeholder="Enter tracking number (e.g., GL-3722-TAB2NLX6)" autocomplete="off">
+                <button type="submit"><i class="fas fa-search"></i> Track Now</button>
+            </form>
+
+            <div class="demo-codes">
+                <span style="color:#666;">Try demo codes:</span>
+                <span class="demo-code" onclick="setTracking('GL-3722-TAB2NLX6')">GL-3722-TAB2NLX6</span>
+                <span class="demo-code" onclick="setTracking('GL-4521-PK9M3RT7')">GL-4521-PK9M3RT7</span>
+                <span class="demo-code" onclick="setTracking('GL-8912-XC4BV9N2')">GL-8912-XC4BV9N2</span>
+                <span class="demo-code" onclick="setTracking('GL-2345-DL8F6G1H')">GL-2345-DL8F6G1H</span>
+                <span class="demo-code" onclick="setTracking('GL-6789-LM2N5P8Q')">GL-6789-LM2N5P8Q</span>
+            </div>
+
+            <div class="recent-tracking">
+                <h4 style="margin-bottom: 1rem;"><i class="fas fa-history"></i> Recent Shipments</h4>
+                <div id="recentList"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function setTracking(code) {
+            document.getElementById('trackingNumber').value = code;
+        }
+
+        function loadRecentTracking() {
+            const recent = JSON.parse(localStorage.getItem('recentTracking') || '[]');
+            const container = document.getElementById('recentList');
+            if (recent.length === 0) {
+                container.innerHTML = '<p style="color:#666;">No recent shipments</p>';
+                return;
+            }
+            container.innerHTML = recent.map(code => `
+                <div class="recent-item" onclick="trackCode('${code}')">
+                    <i class="fas fa-box"></i> ${code}
+                </div>
+            `).join('');
+        }
+
+        function trackCode(code) {
+            document.getElementById('trackingNumber').value = code;
+            trackShipment(new Event('submit'));
+        }
+
+        function trackShipment(event) {
+            event.preventDefault();
+            const trackingNumber = document.getElementById('trackingNumber').value.trim();
+            
+            if (!trackingNumber) {
+                alert('Please enter a tracking number');
+                return;
+            }
+            
+            let recent = JSON.parse(localStorage.getItem('recentTracking') || '[]');
+            recent = [trackingNumber, ...recent.filter(c => c !== trackingNumber)].slice(0, 5);
+            localStorage.setItem('recentTracking', JSON.stringify(recent));
+            
+            localStorage.setItem('trackingNumber', trackingNumber);
+            window.location.href = 'tracking-result.html';
+        }
+
+        loadRecentTracking();
+    </script>
+</body>
+</html>
