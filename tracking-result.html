@@ -530,4 +530,91 @@
                                 <span class="info-label">Name:</span>
                                 <span class="info-value">${data.receiver.name}</span>
                             </div>
-                            <div class=
+                            <div class="info-row">
+                                <span class="info-label">Phone:</span>
+                                <span class="info-value">${data.receiver.phone}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value">${data.receiver.email}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="info-card">
+                            <h3><i class="fas fa-box"></i> Parcel Information</h3>
+                            <div class="info-row">
+                                <span class="info-label">Duty Fees:</span>
+                                <span class="info-value" style="color: ${data.parcel.dutyFees === 'Paid' ? '#0f0' : '#ff4444'}">${data.parcel.dutyFees}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Weight:</span>
+                                <span class="info-value">${data.parcel.weight}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Type:</span>
+                                <span class="info-value">${data.parcel.type}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Pickup Date:</span>
+                                <span class="info-value">${data.parcel.pickupDate}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Expected Delivery:</span>
+                                <span class="info-value">${data.parcel.expectedDelivery}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Tracking Status:</span>
+                                <span class="info-value">${data.parcel.trackingStatus}</span>
+                            </div>
+                        </div>
+
+                        <button class="print-btn" onclick="window.print()">
+                            <i class="fas fa-print"></i> Print Receipt
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="fas fa-history"></i> Shipment History</h3>
+                    <div class="timeline">
+                        ${data.timeline.map(item => `
+                            <div class="timeline-item ${item.completed ? 'completed' : ''} ${item.active ? 'active' : ''}">
+                                <div class="timeline-date">${item.date}</div>
+                                <div class="timeline-title">${item.title}</div>
+                                <div class="timeline-desc">${item.desc}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="map-caption">
+                        <i class="fas fa-map-marker-alt"></i> Complete Shipment Route (Fixed Map View)<br>
+                        <strong>Origin: ${data.origin}</strong>
+                        <br><small>Leaflet | © OpenStreetMap contributors</small>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                if (typeof L !== 'undefined') {
+                    const map = L.map('map').setView(data.coordinates, 5);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; OpenStreetMap contributors',
+                        subdomains: 'abcd'
+                    }).addTo(map);
+                    
+                    L.marker(data.coordinates).addTo(map)
+                        .bindPopup(`<b>${data.origin}</b><br>Shipment ${data.statusText}`)
+                        .openPopup();
+                }
+            }, 100);
+        }
+
+        renderTracking();
+    </script>
+</body>
+</html>
