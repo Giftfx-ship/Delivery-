@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - GlobeSwift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; }
+        .navbar { position: sticky; top: 0; z-index: 1000; padding: 1rem 5%; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,242,254,0.2); }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: #fff; text-decoration: none; transition: 0.3s; }
+        .nav-links a:hover { color: #00f2fe; }
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 5%; }
+        h1 { font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; }
+        .contact-info { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; }
+        .info-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 15px; }
+        .info-icon { width: 50px; height: 50px; background: linear-gradient(135deg,rgba(0,242,254,0.2),transparent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .contact-form { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 1rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-family: inherit; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #00f2fe; }
+        .form-group textarea { min-height: 120px; }
+        .submit-btn { background: linear-gradient(135deg,#00f2fe,#00e0ff); border: none; padding: 1rem 2rem; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
+        .footer { background: #050508; padding: 2rem 5%; text-align: center; color: #666; margin-top: 4rem; }
+        @media (max-width:768px) { .menu-toggle { display: block; } .nav-links { position: fixed; top: 70px; left: -100%; width: 100%; background: rgba(10,10,15,0.98); flex-direction: column; padding: 2rem; transition: left 0.3s; } .nav-links.active { left: 0; } .contact-grid { grid-template-columns: 1fr; } h1 { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+            <div class="nav-links">
+                <a href="index.html">Home</a><a href="tracking.html">Track</a><a href="services.html">Services</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Get In Touch</h1>
+        <p style="color:#aaa;">24/7 customer support - We're here to help</p>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3 style="margin-bottom:1.5rem;">Contact Information</h3>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-phone"></i></div><div><strong>Phone</strong><br>+1 (888) 123-4567</div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-envelope"></i></div><div><strong>Email</strong><br>support@globeswift.com</div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-map-marker-alt"></i></div><div><strong>Headquarters</strong><br>Dubai, United Arab Emirates</div></div>
+                <div class="info-item"><div class="info-icon"><i class="fas fa-clock"></i></div><div><strong>Support Hours</strong><br>24/7 - Always Open</div></div>
+            </div>
+            <div class="contact-form">
+                <h3 style="margin-bottom:1.5rem;">Send Us a Message</h3>
+                <form onsubmit="handleSubmit(event)">
+                    <div class="form-group"><input type="text" placeholder="Your Name" required></div>
+                    <div class="form-group"><input type="email" placeholder="Your Email" required></div>
+                    <div class="form-group"><input type="text" placeholder="Tracking Number (Optional)"></div>
+                    <div class="form-group"><textarea placeholder="Your Message" required></textarea></div>
+                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function handleSubmit(e) { e.preventDefault(); alert('Thank you! Our team will respond within 24 hours.'); e.target.reset(); }
+        document.querySelector('.menu-toggle')?.addEventListener('click',()=>{document.querySelector('.nav-links').classList.toggle('active');});
+    </script>
+</body>
+</html>
