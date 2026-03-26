@@ -658,29 +658,14 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <i class="fas fa-globe"></i> World's #1 Logistics Platform | 99.9% On-Time Delivery
-            </div>
-            <h1>Track Your Shipment<br>Anywhere, Anytime</h1>
-            <p>Enter your tracking number to get real-time updates on your package location and status</p>
-            
             <div class="tracking-form-container">
-                <form class="tracking-form" onsubmit="trackShipment(event)">
-                    <input type="text" id="trackingNumber" placeholder="Enter tracking number">
-                    <button type="submit">
-                        <i class="fas fa-search"></i> Track Package
-                    </button>
-                </form>
-                <div class="demo-codes">
-                    <span style="color:#666; font-size:0.8rem;">Try demo: </span>
-                    <span class="demo-code" onclick="setTracking('GL-3722-TAB2NLX6')">GL-3722-TAB2NLX6</span>
-                    <span class="demo-code" onclick="setTracking('GL-4521-PK9M3RT7')">GL-4521-PK9M3RT7</span>
-                    <span class="demo-code" onclick="setTracking('GL-8912-XC4BV9N2')">GL-8912-XC4BV9N2</span>
-                    <span class="demo-code" onclick="setTracking('GL-2345-DL8F6G1H')">GL-2345-DL8F6G1H</span>
-                    <span class="demo-code" onclick="setTracking('GL-6789-LM2N5P8Q')">GL-6789-LM2N5P8Q</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    <form class="tracking-form" onsubmit="trackShipment(event)">
+        <input type="text" id="trackingNumber" placeholder="Enter tracking number">
+        <button type="submit">
+            <i class="fas fa-search"></i> Track Package
+        </button>
+    </form>
+</div>
     <section class="stats">
         <div class="stats-grid">
             <div class="stat-card">
