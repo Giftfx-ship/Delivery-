@@ -537,7 +537,7 @@
                     <circle cx="50" cy="50" r="45" fill="none" stroke="#00f2fe" stroke-width="3" stroke-dasharray="70 210" stroke-linecap="round"/>
                 </svg>
             </div>
-            <div class="loader-text">ANALYZING SHIPMENT DATA</div>
+            <div class="loader-text">CONNECTING TO CLOUD DATABASE</div>
             <div class="loader-dots">
                 <div class="loader-dot"></div>
                 <div class="loader-dot"></div>
@@ -555,147 +555,50 @@
 
     <div class="container" id="trackingContent">
         <div style="text-align: center; padding: 4rem;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; color: #00f2fe;"></i>
-            <p style="margin-top: 1rem; color: #888;">Loading shipment intelligence...</p>
+            <i class="fas fa-cloud-upload-alt fa-spin" style="font-size: 2.5rem; color: #00f2fe;"></i>
+            <p style="margin-top: 1rem; color: #888;">Fetching from MongoDB Cloud...</p>
         </div>
     </div>
 
     <footer class="footer">
-        <p>GlobeSwift Elite Shipment Intelligence System v4.0 | Secure & Encrypted</p>
+        <p><i class="fas fa-cloud"></i> GlobeSwift Elite | Powered by MongoDB Atlas | Real-time Cloud Data</p>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // ============================================
         // GLOBESWIFT ELITE SHIPMENT INTELLIGENCE
+        // MONGODB CLOUD VERSION
         // ============================================
 
-        const STORAGE_KEY = 'globeswift_shipments';
-
-        // Default Shipments Database
-        const defaultShipments = {
-            'GL-3722-TAB2NLX6': {
-                status: 'order_confirmed',
-                statusText: 'Order Confirmed',
-                statusDesc: 'Your shipment has been confirmed and is being processed.',
-                lastUpdated: 'Mar 26, 2026 - 05:48 PM',
-                sender: { name: 'Prince Hamdan Fazza', country: 'United Arab Emirates', phone: 'N/A' },
-                receiver: { name: 'Aleksandar Molan', phone: '+381692609980', email: 'molan-aleksandar@hotmail.com' },
-                parcel: { weight: '2.5 kg', type: 'Documents', dutyFees: 'Paid', pickupDate: 'Mar 26, 2026 - 04:48 PM', expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Order Confirmed' },
-                timeline: [
-                    { date: 'Mar 26, 2026 - 04:48 PM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.', completed: true, active: true },
-                    { date: 'Pending', title: 'Picked by Courier', desc: 'Courier will pick up the package', completed: false, active: false },
-                    { date: 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: false, active: false },
-                    { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
-                ],
-                origin: 'United Arab Emirates',
-                destination: 'Serbia',
-                coordinates: [25.2048, 55.2708]
-            },
-            'GL-4521-PK9M3RT7': {
-                status: 'picked',
-                statusText: 'Picked by Courier',
-                statusDesc: 'Your package has been picked up by our courier.',
-                lastUpdated: 'Mar 26, 2026 - 02:30 PM',
-                sender: { name: 'Ahmed Al Maktoum', country: 'United Arab Emirates', phone: '+971 50 123 4567' },
-                receiver: { name: 'Maria Garcia', phone: '+34 612 345 678', email: 'maria.garcia@email.com' },
-                parcel: { weight: '5.2 kg', type: 'Electronics', dutyFees: 'Paid', pickupDate: 'Mar 26, 2026 - 10:00 AM', expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Picked by Courier' },
-                timeline: [
-                    { date: 'Mar 26, 2026 - 10:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
-                    { date: 'Mar 26, 2026 - 02:30 PM', title: 'Picked by Courier', desc: 'Package picked up by courier', completed: true, active: true },
-                    { date: 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: false, active: false },
-                    { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
-                ],
-                origin: 'United Arab Emirates',
-                destination: 'Spain',
-                coordinates: [25.2048, 55.2708]
-            },
-            'GL-8912-XC4BV9N2': {
-                status: 'onway',
-                statusText: 'On The Way',
-                statusDesc: 'Your shipment is in transit and moving through our network.',
-                lastUpdated: 'Mar 26, 2026 - 08:00 AM',
-                sender: { name: 'Dubai Logistics Co.', country: 'United Arab Emirates', phone: '+971 4 123 4567' },
-                receiver: { name: 'James Wilson', phone: '+44 20 7946 0123', email: 'james.wilson@email.co.uk' },
-                parcel: { weight: '12.8 kg', type: 'Commercial Goods', dutyFees: 'Paid', pickupDate: 'Mar 25, 2026 - 09:00 AM', expectedDelivery: 'Mar 27, 2026', trackingStatus: 'On The Way' },
-                timeline: [
-                    { date: 'Mar 25, 2026 - 09:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
-                    { date: 'Mar 25, 2026 - 02:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
-                    { date: 'Mar 26, 2026 - 08:00 AM', title: 'On The Way', desc: 'Shipment in transit - Dubai Hub', completed: true, active: true },
-                    { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
-                ],
-                origin: 'United Arab Emirates',
-                destination: 'United Kingdom',
-                coordinates: [25.2048, 55.2708]
-            },
-            'GL-2345-DL8F6G1H': {
-                status: 'customs',
-                statusText: 'Custom Hold',
-                statusDesc: 'Shipment is being held for customs clearance.',
-                lastUpdated: 'Mar 26, 2026 - 11:00 AM',
-                sender: { name: 'Global Trading LLC', country: 'China', phone: '+86 10 1234 5678' },
-                receiver: { name: 'Robert Chen', phone: '+1 212 555 0123', email: 'robert.chen@email.com' },
-                parcel: { weight: '25.0 kg', type: 'Electronics', dutyFees: 'Pending', pickupDate: 'Mar 24, 2026 - 08:00 AM', expectedDelivery: 'Pending Clearance', trackingStatus: 'Customs Hold' },
-                timeline: [
-                    { date: 'Mar 24, 2026 - 08:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
-                    { date: 'Mar 24, 2026 - 01:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
-                    { date: 'Mar 25, 2026 - 09:00 AM', title: 'On The Way', desc: 'Shipment in transit', completed: true, active: false },
-                    { date: 'Mar 26, 2026 - 11:00 AM', title: 'Custom Hold', desc: 'Awaiting customs clearance documentation', completed: true, active: true }
-                ],
-                origin: 'China',
-                destination: 'United States',
-                coordinates: [39.9042, 116.4074]
-            },
-            'GL-6789-LM2N5P8Q': {
-                status: 'delivered',
-                statusText: 'Delivered',
-                statusDesc: 'Your package has been successfully delivered.',
-                lastUpdated: 'Mar 26, 2026 - 09:15 AM',
-                sender: { name: 'Tech Supply Co.', country: 'Japan', phone: '+81 3 1234 5678' },
-                receiver: { name: 'Sarah Johnson', phone: '+1 310 555 0987', email: 'sarah.johnson@email.com' },
-                parcel: { weight: '3.2 kg', type: 'Electronics', dutyFees: 'Paid', pickupDate: 'Mar 20, 2026 - 10:00 AM', expectedDelivery: 'Mar 26, 2026 - 09:00 AM', trackingStatus: 'Delivered' },
-                timeline: [
-                    { date: 'Mar 20, 2026 - 10:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
-                    { date: 'Mar 20, 2026 - 03:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
-                    { date: 'Mar 22, 2026 - 08:00 AM', title: 'On The Way', desc: 'Shipment in transit', completed: true, active: false },
-                    { date: 'Mar 26, 2026 - 09:15 AM', title: 'Delivered', desc: 'Signed by: Sarah J.', completed: true, active: true }
-                ],
-                origin: 'Japan',
-                destination: 'United States',
-                coordinates: [35.6762, 139.6503]
-            }
-        };
-
-        // Get shipments from storage
-        function getShipments() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    if (Object.keys(parsed).length > 0) {
-                        return parsed;
-                    }
-                } catch(e) {}
-            }
-            // Save defaults if empty
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultShipments));
-            return { ...defaultShipments };
-        }
-
-        // Get single shipment
-        function getShipment(trackingCode) {
-            const shipments = getShipments();
-            return shipments[trackingCode.toUpperCase()] || null;
-        }
-
-        // Get tracking number from URL or localStorage
+        const API_URL = window.location.origin;
+        let shipmentData = null;
         let trackingNumber = localStorage.getItem('trackingNumber');
+
         if (!trackingNumber) {
             trackingNumber = 'GL-3722-TAB2NLX6';
         }
         trackingNumber = trackingNumber.toUpperCase();
 
-        const shipmentData = getShipment(trackingNumber);
+        // ============================================
+        // FETCH FROM MONGODB CLOUD
+        // ============================================
+        async function fetchShipmentFromCloud(code) {
+            try {
+                const response = await fetch(`${API_URL}/api/shipments/${code}`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        return null;
+                    }
+                    throw new Error('Network error');
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching from MongoDB:', error);
+                return null;
+            }
+        }
 
         function getStatusClass(status) {
             const map = {
@@ -708,15 +611,25 @@
             return map[status] || 'status-order_confirmed';
         }
 
-        function renderTracking() {
+        async function renderTracking() {
             const container = document.getElementById('trackingContent');
+            
+            // Show loading
+            container.innerHTML = `
+                <div style="text-align: center; padding: 4rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; color: #00f2fe;"></i>
+                    <p style="margin-top: 1rem; color: #888;">Fetching from MongoDB Cloud...</p>
+                </div>
+            `;
+            
+            shipmentData = await fetchShipmentFromCloud(trackingNumber);
             
             if (!shipmentData) {
                 container.innerHTML = `
                     <div class="not-found">
                         <i class="fas fa-search"></i>
                         <h2>Tracking Number Not Found</h2>
-                        <p>The tracking number <strong>${trackingNumber}</strong> does not exist in our system.</p>
+                        <p>The tracking number <strong>${trackingNumber}</strong> does not exist in our MongoDB Cloud database.</p>
                         <p>Please verify the number and try again.</p>
                         <a href="tracking.html" class="not-found-btn"><i class="fas fa-arrow-left"></i> Try Another Tracking</a>
                     </div>
@@ -730,16 +643,16 @@
                 <div class="tracking-header">
                     <div class="tracking-number-box">
                         <div class="tracking-number"><i class="fas fa-barcode"></i> ${trackingNumber}</div>
-                        <div class="verified-badge"><i class="fas fa-shield-alt"></i> Verified & Encrypted</div>
+                        <div class="verified-badge"><i class="fas fa-cloud"></i> MongoDB Cloud | Verified</div>
                     </div>
                     <div>
                         <div class="status-badge ${statusClass}">
-                            <i class="fas ${shipmentData.status === 'delivered' ? 'fa-check-circle' : shipmentData.status === 'customs' ? 'fa-clock' : 'fa-truck'}"></i> ${shipmentData.statusText}
+                            <i class="fas ${shipmentData.status === 'delivered' ? 'fa-check-circle' : shipmentData.status === 'customs' ? 'fa-clock' : 'fa-truck'}"></i> ${shipmentData.statusText || shipmentData.status}
                         </div>
                     </div>
                     <div class="last-updated">
-                        <i class="fas fa-clock"></i> Last Intelligence Update: ${shipmentData.lastUpdated}
-                        <i class="fas fa-lock" style="margin-left: auto; font-size: 0.7rem;"></i>
+                        <i class="fas fa-clock"></i> Last Intelligence Update: ${shipmentData.lastUpdated || new Date().toLocaleString()}
+                        <i class="fas fa-database" style="margin-left: auto; font-size: 0.7rem;"></i>
                     </div>
                 </div>
 
@@ -803,7 +716,7 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Current Status:</span>
-                                <span class="info-value">${shipmentData.parcel?.trackingStatus || 'N/A'}</span>
+                                <span class="info-value">${shipmentData.parcel?.trackingStatus || shipmentData.statusText || 'N/A'}</span>
                             </div>
                         </div>
 
@@ -817,21 +730,22 @@
                 <div class="info-card">
                     <h3><i class="fas fa-timeline"></i> Shipment Journey</h3>
                     <div class="timeline">
-                        ${shipmentData.timeline.map(item => `
+                        ${(shipmentData.timeline || []).map(item => `
                             <div class="timeline-item ${item.completed ? 'completed' : ''} ${item.active ? 'active' : ''}">
                                 <div class="timeline-date">${item.date}</div>
                                 <div class="timeline-title">${item.title}</div>
                                 <div class="timeline-desc">${item.desc}</div>
                             </div>
                         `).join('')}
+                        ${(!shipmentData.timeline || shipmentData.timeline.length === 0) ? '<div style="color:#888; text-align:center; padding:1rem;">Timeline data pending</div>' : ''}
                     </div>
                 </div>
 
                 <div class="map-container">
                     <div id="map"></div>
                     <div class="map-caption">
-                        <i class="fas fa-map-marker-alt"></i> Current Location Intelligence | <strong>Origin: ${shipmentData.origin}</strong> → Destination: ${shipmentData.destination}
-                        <br><small>Powered by GlobeSwift Satellite Network</small>
+                        <i class="fas fa-map-marker-alt"></i> Current Location Intelligence | <strong>Origin: ${shipmentData.origin || 'Unknown'}</strong> → Destination: ${shipmentData.destination || 'Unknown'}
+                        <br><small>Powered by GlobeSwift Satellite Network | Data from MongoDB Cloud</small>
                     </div>
                 </div>
             `;
@@ -853,7 +767,7 @@
                     });
                     
                     L.marker(coords, { icon: customIcon }).addTo(map)
-                        .bindPopup(`<b>${shipmentData.origin}</b><br>Shipment: ${shipmentData.statusText}`)
+                        .bindPopup(`<b>${shipmentData.origin || 'Origin'}</b><br>Shipment: ${shipmentData.statusText || shipmentData.status}`)
                         .openPopup();
                 }
             }, 100);
@@ -876,7 +790,7 @@
                     }, 600);
                 }
                 renderTracking();
-            }, 800);
+            }, 500);
         });
     </script>
 </body>
