@@ -3,77 +3,715 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - GlobeSwift</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Executive Contact - GlobeSwift Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; }
-        .navbar { position: sticky; top: 0; z-index: 1000; padding: 1rem 5%; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,242,254,0.2); }
-        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; }
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-links a { color: #fff; text-decoration: none; transition: 0.3s; }
-        .nav-links a:hover { color: #00f2fe; }
-        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 5%; }
-        h1 { font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; }
-        .contact-info { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; }
-        .info-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 15px; }
-        .info-icon { width: 50px; height: 50px; background: linear-gradient(135deg,rgba(0,242,254,0.2),transparent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .contact-form { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group input, .form-group textarea { width: 100%; padding: 1rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-family: inherit; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #00f2fe; }
-        .form-group textarea { min-height: 120px; }
-        .submit-btn { background: linear-gradient(135deg,#00f2fe,#00e0ff); border: none; padding: 1rem 2rem; border-radius: 50px; font-weight: 600; cursor: pointer; width: 100%; }
-        .footer { background: #050508; padding: 2rem 5%; text-align: center; color: #666; margin-top: 4rem; }
-        @media (max-width:768px) { .menu-toggle { display: block; } .nav-links { position: fixed; top: 70px; left: -100%; width: 100%; background: rgba(10,10,15,0.98); flex-direction: column; padding: 2rem; transition: left 0.3s; } .nav-links.active { left: 0; } .contact-grid { grid-template-columns: 1fr; } h1 { font-size: 2rem; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-cinematic {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(ellipse at 20% 30%, #0a0a2a, #030308);
+        }
+
+        .glow-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(45deg, rgba(0,242,254,0.02) 0px, rgba(0,242,254,0.02) 2px, transparent 2px, transparent 8px),
+                repeating-linear-gradient(135deg, rgba(0,242,254,0.02) 0px, rgba(0,242,254,0.02) 2px, transparent 2px, transparent 8px);
+            z-index: -1;
+            animation: slideLines 30s linear infinite;
+        }
+
+        @keyframes slideLines {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+        /* Floating Particles */
+        .floating-particle {
+            position: fixed;
+            background: radial-gradient(circle, #00f2fe, transparent);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: floatParticle 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes floatParticle {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.2rem 5%;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+            transition: all 0.4s;
+        }
+
+        .navbar.scrolled {
+            padding: 0.8rem 5%;
+            background: rgba(10, 10, 15, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            font-family: 'Space Grotesk', monospace;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00f2fe;
+        }
+
+        .track-btn {
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            padding: 0.6rem 1.3rem;
+            border-radius: 50px;
+            color: #0a0a0f !important;
+            font-weight: 600 !important;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .contact-hero {
+            min-height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 5% 3rem;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .contact-hero p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        /* Main Contact Section */
+        .contact-section {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 5% 5rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 3rem;
+        }
+
+        /* Contact Info Cards */
+        .info-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #00f2fe, #00e0ff);
+            transform: scaleY(0);
+            transition: transform 0.4s;
+        }
+
+        .info-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .info-card:hover {
+            transform: translateX(5px);
+            border-color: rgba(0, 242, 254, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .info-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(0, 224, 255, 0.05));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            color: #aaa;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .info-detail {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #00f2fe;
+            font-family: monospace;
+        }
+
+        .info-detail i {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Contact Form */
+        .contact-form-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 2.5rem;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            transition: all 0.4s;
+        }
+
+        .contact-form-card:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: 0 15px 40px rgba(0, 242, 254, 0.05);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            font-size: 1rem;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-group textarea {
+            border-radius: 24px;
+            resize: vertical;
+            min-height: 120px;
+            padding-top: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00f2fe;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00f2fe;
+            font-size: 1rem;
+        }
+
+        .textarea-icon {
+            top: 1.2rem;
+            transform: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            border: none;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0a0a0f;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.3);
+            gap: 1rem;
+        }
+
+        /* Live Chat Badge */
+        .live-chat {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 242, 254, 0.05);
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .live-chat i {
+            font-size: 2rem;
+            color: #00f2fe;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .live-chat h4 {
+            margin: 0.5rem 0;
+        }
+
+        .live-chat p {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Map Section */
+        .map-section {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 32px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        #map {
+            height: 350px;
+            width: 100%;
+            background: #1a1a2a;
+        }
+
+        .map-caption {
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #030308;
+            padding: 3rem 5% 2rem;
+            border-top: 1px solid rgba(0, 242, 254, 0.15);
+            margin-top: 4rem;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-col h4 {
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            color: #00f2fe;
+        }
+
+        .footer-col a {
+            display: block;
+            color: #777;
+            text-decoration: none;
+            margin-bottom: 0.6rem;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-col a:hover {
+            color: #00f2fe;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #00f2fe;
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 968px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .contact-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                background: rgba(10, 10, 15, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                transition: left 0.3s;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+        }
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
+    <div class="bg-cinematic"></div>
+    <div class="glow-lines"></div>
+
+    <!-- Floating Particles -->
+    <div class="floating-particle" style="width: 200px; height: 200px; top: 10%; left: -50px;"></div>
+    <div class="floating-particle" style="width: 300px; height: 300px; bottom: 0%; right: -100px; animation-duration: 25s;"></div>
+    <div class="floating-particle" style="width: 150px; height: 150px; top: 50%; right: 15%; animation-duration: 18s;"></div>
+
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
-            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
             <div class="nav-links">
-                <a href="index.html">Home</a><a href="tracking.html">Track</a><a href="services.html">Services</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+                <a href="index.html">Home</a>
+                <a href="tracking.html">Track</a>
+                <a href="services.html">Services</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="tracking.html" class="track-btn"><i class="fas fa-search"></i> Track</a>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <h1>Get In Touch</h1>
-        <p style="color:#aaa;">24/7 customer support - We're here to help</p>
-        <div class="contact-grid">
-            <div class="contact-info">
-                <h3 style="margin-bottom:1.5rem;">Contact Information</h3>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-phone"></i></div><div><strong>Phone</strong><br>+1 (888) 123-4567</div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-envelope"></i></div><div><strong>Email</strong><br>support@globeswift.com</div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-map-marker-alt"></i></div><div><strong>Headquarters</strong><br>Dubai, United Arab Emirates</div></div>
-                <div class="info-item"><div class="info-icon"><i class="fas fa-clock"></i></div><div><strong>Support Hours</strong><br>24/7 - Always Open</div></div>
+    <section class="contact-hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-headset"></i> 24/7 Executive Support
+                <i class="fas fa-shield-alt"></i>
             </div>
-            <div class="contact-form">
-                <h3 style="margin-bottom:1.5rem;">Send Us a Message</h3>
+            <h1>Connect With Our Elite Team</h1>
+            <p>Global logistics intelligence at your fingertips. We respond within 2 hours.</p>
+        </div>
+    </section>
+
+    <div class="contact-section">
+        <div class="contact-grid">
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+                    <h3>Executive Hotline</h3>
+                    <p>Priority support for urgent shipments</p>
+                    <div class="info-detail"><i class="fas fa-phone"></i> +1 (888) 123-ELITE</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                    <h3>Elite Support</h3>
+                    <p>Direct line to our logistics specialists</p>
+                    <div class="info-detail"><i class="fas fa-envelope"></i> elite@globeswift.com</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3>Global Headquarters</h3>
+                    <p>Dubai International Financial Center</p>
+                    <div class="info-detail"><i class="fas fa-building"></i> DIFC, Dubai, UAE</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon"><i class="fas fa-clock"></i></div>
+                    <h3>Always Online</h3>
+                    <p>24 hours • 7 days • 365 days</p>
+                    <div class="info-detail"><i class="fas fa-globe"></i> Global Coverage</div>
+                </div>
+            </div>
+
+            <div class="contact-form-card">
+                <div class="form-header">
+                    <h2>Send a Secure Message</h2>
+                    <p>Your information is encrypted and confidential</p>
+                </div>
                 <form onsubmit="handleSubmit(event)">
-                    <div class="form-group"><input type="text" placeholder="Your Name" required></div>
-                    <div class="form-group"><input type="email" placeholder="Your Email" required></div>
-                    <div class="form-group"><input type="text" placeholder="Tracking Number (Optional)"></div>
-                    <div class="form-group"><textarea placeholder="Your Message" required></textarea></div>
-                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Send Message</button>
+                    <div class="form-group">
+                        <i class="fas fa-user form-icon"></i>
+                        <input type="text" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <i class="fas fa-envelope form-icon"></i>
+                        <input type="email" placeholder="Email Address" required>
+                    </div>
+                    <div class="form-group">
+                        <i class="fas fa-tag form-icon"></i>
+                        <input type="text" placeholder="Tracking Number (Optional)">
+                    </div>
+                    <div class="form-group">
+                        <i class="fas fa-comment form-icon textarea-icon"></i>
+                        <textarea placeholder="How can we assist you?"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Send Encrypted Message
+                        <i class="fas fa-lock"></i>
+                    </button>
                 </form>
+                <div class="live-chat">
+                    <i class="fas fa-comment-dots"></i>
+                    <h4>Live Chat Available</h4>
+                    <p>Connect with an executive specialist in real-time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="map-section">
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="map-caption">
+                <i class="fas fa-map-pin"></i> Global Operations Center | Dubai, United Arab Emirates
             </div>
         </div>
     </div>
 
     <footer class="footer">
-        <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>GlobeSwift</h4>
+                <p style="color: #666; font-size: 0.85rem;">Elite logistics intelligence for the global enterprise.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <a href="tracking.html">Track Shipment</a>
+                <a href="services.html">Services</a>
+                <a href="about.html">About</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="#">Elite Support 24/7</a>
+                <a href="#">Security & Compliance</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <a href="#"><i class="fas fa-phone"></i> +1 (888) 123-ELITE</a>
+                <a href="#"><i class="fas fa-envelope"></i> elite@globeswift.com</a>
+                <a href="#"><i class="fas fa-map-marker-alt"></i> DIFC, Dubai, UAE</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2026 GlobeSwift Logistics. All rights reserved. Elite Intelligence System</p>
+        </div>
     </footer>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        function handleSubmit(e) { e.preventDefault(); alert('Thank you! Our team will respond within 24 hours.'); e.target.reset(); }
-        document.querySelector('.menu-toggle')?.addEventListener('click',()=>{document.querySelector('.nav-links').classList.toggle('active');});
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Form submit
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert('✓ Message encrypted and sent. An executive specialist will respond within 2 hours.');
+            event.target.reset();
+        }
+
+        // Map
+        setTimeout(() => {
+            if (typeof L !== 'undefined') {
+                const map = L.map('map').setView([25.2048, 55.2708], 12);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
+                    subdomains: 'abcd'
+                }).addTo(map);
+                
+                const customIcon = L.divIcon({
+                    html: '<div style="background: #00f2fe; width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 10px #00f2fe;"></div>',
+                    iconSize: [12, 12],
+                    className: 'custom-marker'
+                });
+                
+                L.marker([25.2048, 55.2708], { icon: customIcon }).addTo(map)
+                    .bindPopup('<b>GlobeSwift Global HQ</b><br>Dubai International Financial Center')
+                    .openPopup();
+            }
+        }, 100);
     </script>
 </body>
 </html>
