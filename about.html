@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - GlobeSwift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; }
+        .navbar { position: sticky; top: 0; z-index: 1000; padding: 1rem 5%; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,242,254,0.2); }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: #fff; text-decoration: none; transition: 0.3s; }
+        .nav-links a:hover { color: #00f2fe; }
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 5%; }
+        h1 { font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(135deg,#fff,#00f2fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 2rem; margin: 4rem 0; text-align: center; }
+        .stat-number { font-size: 2.5rem; font-weight: 800; color: #00f2fe; }
+        .about-text { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; margin-top: 2rem; }
+        .about-text p { color: #aaa; line-height: 1.8; margin-bottom: 1rem; }
+        .footer { background: #050508; padding: 2rem 5%; text-align: center; color: #666; margin-top: 4rem; }
+        @media (max-width:768px) { .menu-toggle { display: block; } .nav-links { position: fixed; top: 70px; left: -100%; width: 100%; background: rgba(10,10,15,0.98); flex-direction: column; padding: 2rem; transition: left 0.3s; } .nav-links.active { left: 0; } .stats-grid { grid-template-columns: repeat(2,1fr); } h1 { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+            <div class="nav-links">
+                <a href="index.html">Home</a><a href="tracking.html">Track</a><a href="services.html">Services</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>About GlobeSwift Logistics</h1>
+        <p style="color:#aaa; font-size:1.2rem;">Global leaders in logistics and supply chain solutions since 2015</p>
+        
+        <div class="stats-grid">
+            <div><div class="stat-number">11+</div><div>Years Experience</div></div>
+            <div><div class="stat-number">190+</div><div>Countries Served</div></div>
+            <div><div class="stat-number">2M+</div><div>Packages Delivered</div></div>
+            <div><div class="stat-number">99.9%</div><div>On-Time Delivery</div></div>
+        </div>
+
+        <div class="about-text">
+            <h2 style="margin-bottom:1rem;">Our Mission</h2>
+            <p>At GlobeSwift Logistics, we are committed to providing smart logistics solutions across the world. We deliver excellence in shipping, courier services, and package tracking with our global network of trusted partners.</p>
+            
+            <h2 style="margin:2rem 0 1rem;">Our Vision</h2>
+            <p>To be the world's most trusted logistics partner, connecting businesses and individuals across borders with unmatched reliability, transparency, and speed.</p>
+            
+            <h2 style="margin:2rem 0 1rem;">Why Choose Us</h2>
+            <p>With over 11 years of industry experience, we've built a reputation for excellence. Our advanced tracking technology, dedicated support team, and global network ensure your shipments always reach their destination safely and on time. We offer 24/7 customer support, real-time tracking, and the highest security standards in the industry.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelector('.menu-toggle')?.addEventListener('click',()=>{
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+    </script>
+</body>
+  </html>
