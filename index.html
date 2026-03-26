@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GlobeSwift | World's #1 Logistics & Tracking Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Gradient Background */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(125deg, #0a0a0f 0%, #0f0f1a 50%, #0a0a0f 100%);
+        }
+
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(0,242,254,0.1) 0%, transparent 60%);
+            animation: slowMove 25s ease-in-out infinite;
+        }
+
+        @keyframes slowMove {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-5%, -5%); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(0,242,254,0.4), transparent);
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.5;
+            }
+            85% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(50px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.2rem 5%;
+            background: rgba(10, 10, 15, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.8rem 5%;
+            background: rgba(10, 10, 15, 0.98);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #00f2fe, #00e0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            font-family: 'Space Grotesk', monospace;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { filter: drop-shadow(0 0 3px rgba(0,242,254,0.3)); }
+            50% { filter: drop-shadow(0 0 12px rgba(0,242,254,0.6)); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00f2fe, #00e0ff);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: #00f2fe;
+        }
+
+        .track-btn {
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            padding: 0.6rem 1.3rem;
+            border-radius: 50px;
+            color: #0a0a0f !important;
+            font-weight: 600 !important;
+        }
+
+        .track-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,242,254,0.4);
+        }
+
+        .track-btn::after {
+            display: none;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section with Video */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 5% 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.5;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.85));
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 2;
+            animation: fadeUp 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 242, 254, 0.15);
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            animation: borderGlow 2s infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,242,254,0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(0,242,254,0); }
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff, #00f2fe, #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textShine 3s linear infinite;
+        }
+
+        @keyframes textShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+        }
+
+        /* Tracking Form */
+        .tracking-form-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 60px;
+            padding: 0.4rem;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            max-width: 600px;
+            margin: 0 auto;
+            transition: all 0.3s;
+        }
+
+        .tracking-form-container:hover {
+            border-color: #00f2fe;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
+        }
+
+        .tracking-form {
+            display: flex;
+            gap: 0;
+        }
+
+        .tracking-form input {
+            flex: 1;
+            padding: 1.2rem 1.8rem;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            color: #fff;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .tracking-form input:focus {
+            outline: none;
+        }
+
+        .tracking-form input::placeholder {
+            color: #666;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tracking-form button {
+            padding: 1.2rem 2.5rem;
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0a0a0f;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tracking-form button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.4);
+        }
+
+        .demo-codes {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .demo-code {
+            background: rgba(0, 242, 254, 0.1);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .demo-code:hover {
+            background: rgba(0, 242, 254, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 5rem 5%;
+            background: linear-gradient(135deg, rgba(0,242,254,0.05), transparent);
+        }
+
+        .stats-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-card {
+            padding: 2rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f2fe, #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stat-label {
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 6rem 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .services-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            display: block;
+        }
+
+        .service-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(0, 242, 254, 0.5);
+            box-shadow: 0 25px 40px rgba(0, 242, 254, 0.15);
+        }
+
+        .service-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .service-card:hover .service-img {
+            transform: scale(1.05);
+        }
+
+        .service-content {
+            padding: 1.8rem;
+        }
+
+        .service-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(0, 224, 255, 0.1));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-card p {
+            color: #aaa;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 5rem 5%;
+            background: linear-gradient(135deg, rgba(0,242,254,0.1), rgba(0,224,255,0.05));
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            color: #0a0a0f;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,242,254,0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: #050508;
+            padding: 4rem 5% 2rem;
+            border-top: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-col h4 {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: #00f2fe;
+        }
+
+        .footer-col a {
+            display: block;
+            color: #aaa;
+            text-decoration: none;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: #00f2fe;
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #00f2fe;
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(10, 10, 15, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                transition: left 0.3s;
+                gap: 1.5rem;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tracking-form {
+                flex-direction: column;
+                padding: 0.5rem;
+            }
+            
+            .tracking-form button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    <div class="particles" id="particles"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="tracking.html">Track</a>
+                <a href="services.html">Services</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="tracking.html" class="track-btn"><i class="fas fa-search"></i> Track Now</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <video class="hero-video" autoplay loop muted playsinline>
+            <source src="images/hero-bg.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-globe"></i> World's #1 Logistics Platform | 99.9% On-Time Delivery
+            </div>
+            <h1>Track Your Shipment<br>Anywhere, Anytime</h1>
+            <p>Enter your tracking number to get real-time updates on your package location and status</p>
+            
+            <div class="tracking-form-container">
+                <form class="tracking-form" onsubmit="trackShipment(event)">
+                    <input type="text" id="trackingNumber" placeholder="Enter tracking number">
+                    <button type="submit">
+                        <i class="fas fa-search"></i> Track Package
+                    </button>
+                </form>
+                <div class="demo-codes">
+                    <span style="color:#666; font-size:0.8rem;">Try demo: </span>
+                    <span class="demo-code" onclick="setTracking('GL-3722-TAB2NLX6')">GL-3722-TAB2NLX6</span>
+                    <span class="demo-code" onclick="setTracking('GL-4521-PK9M3RT7')">GL-4521-PK9M3RT7</span>
+                    <span class="demo-code" onclick="setTracking('GL-8912-XC4BV9N2')">GL-8912-XC4BV9N2</span>
+                    <span class="demo-code" onclick="setTracking('GL-2345-DL8F6G1H')">GL-2345-DL8F6G1H</span>
+                    <span class="demo-code" onclick="setTracking('GL-6789-LM2N5P8Q')">GL-6789-LM2N5P8Q</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">2M+</div>
+                <div class="stat-label">Packages Delivered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">190+</div>
+                <div class="stat-label">Countries Served</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">On-Time Delivery</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Live Support</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services">
+        <h2 class="section-title">Our Premium Services</h2>
+        <p class="section-subtitle">Comprehensive logistics solutions tailored to your business needs</p>
+        <div class="services-grid">
+            <a href="air-freight.html" class="service-card">
+                <img src="images/air-freight.jpg" class="service-img" alt="Air Freight" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Air+Freight'">
+                <div class="service-content">
+                    <div class="service-icon"><i class="fas fa-plane"></i></div>
+                    <h3>Air Freight</h3>
+                    <p>Express air freight solutions with IATA-certified handling for time-critical shipments worldwide.</p>
+                </div>
+            </a>
+            <a href="ocean-freight.html" class="service-card">
+                <img src="images/ocean-freight.jpg" class="service-img" alt="Ocean Freight" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Ocean+Freight'">
+                <div class="service-content">
+                    <div class="service-icon"><i class="fas fa-ship"></i></div>
+                    <h3>Ocean Freight</h3>
+                    <p>FCL, LCL, and consolidation services with global coverage and competitive rates.</p>
+                </div>
+            </a>
+            <a href="road-transport.html" class="service-card">
+                <img src="images/road-transport.jpg" class="service-img" alt="Road Transport" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Road+Transport'">
+                <div class="service-content">
+                    <div class="service-icon"><i class="fas fa-truck"></i></div>
+                    <h3>Road Transport</h3>
+                    <p>Domestic and cross-border road transportation with real-time tracking.</p>
+                </div>
+            </a>
+            <a href="warehousing.html" class="service-card">
+                <img src="images/warehousing.jpg" class="service-img" alt="Warehousing" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Warehousing'">
+                <div class="service-content">
+                    <div class="service-icon"><i class="fas fa-warehouse"></i></div>
+                    <h3>Warehousing</h3>
+                    <p>State-of-the-art warehousing with inventory management systems.</p>
+                </div>
+            </a>
+            <a href="packaging.html" class="service-card">
+                <img src="images/packaging.jpg" class="service-img" alt="Packaging" onerror="this.src='https://placehold.co/600x400/1a1a2e/00f2fe?text=Packaging'">
+                <div class="service-content">
+                    <div class="service-icon"><i class="fas fa-box"></i></div>
+                    <h3>Packaging</h3>
+                    <p>Professional packaging and crating services with cargo insurance.</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Ready to Ship with Confidence?</h2>
+        <p>Get started with our professional logistics services today.</p>
+        <a href="contact.html" class="cta-btn">Contact Us <i class="fas fa-arrow-right"></i></a>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>GlobeSwift Logistics</h4>
+                <p style="color: #aaa;">Providing smart logistics solutions across the world with unmatched reliability and speed.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="tracking.html">Track Shipment</a>
+                <a href="services.html">Services</a>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="support.html">24/7 Support</a>
+                <a href="faq.html">FAQ</a>
+                <a href="terms.html">Terms & Conditions</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Info</h4>
+                <a href="#"><i class="fas fa-phone"></i> +1 (888) 123-4567</a>
+                <a href="#"><i class="fas fa-envelope"></i> support@globeswift.com</a>
+                <a href="#"><i class="fas fa-map-marker-alt"></i> Dubai, UAE</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 60; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 5 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = Math.random() * 15 + 10 + 's';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Tracking functions
+        function setTracking(code) {
+            document.getElementById('trackingNumber').value = code;
+        }
+
+        function trackShipment(event) {
+            event.preventDefault();
+            const trackingNumber = document.getElementById('trackingNumber').value.trim();
+            
+            if (!trackingNumber) {
+                alert('Please enter a tracking number');
+                return;
+            }
+            
+            localStorage.setItem('trackingNumber', trackingNumber);
+            window.location.href = 'tracking-result.html';
+        }
+    </script>
+</body>
+</html>
