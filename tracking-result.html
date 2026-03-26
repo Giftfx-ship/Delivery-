@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Tracking Result - GlobeSwift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 5%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: #00f2fe;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        /* Tracking Header */
+        .tracking-header {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(0, 224, 255, 0.05));
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+        }
+
+        .tracking-number-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tracking-number {
+            font-size: 1.8rem;
+            font-family: monospace;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .verified-badge {
+            background: rgba(0, 255, 0, 0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #0f0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .status-order-confirmed { background: rgba(0, 242, 254, 0.2); color: #00f2fe; }
+        .status-picked { background: rgba(255, 165, 0, 0.2); color: #ffa500; }
+        .status-onway { background: rgba(0, 255, 255, 0.2); color: #0ff; }
+        .status-customs { background: rgba(255, 0, 0, 0.2); color: #ff4444; }
+        .status-delivered { background: rgba(0, 255, 0, 0.2); color: #0f0; }
+
+        .last-updated {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        /* Grid Layout */
+        .tracking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .tracking-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Info Cards */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-label {
+            color: #888;
+        }
+
+        .info-value {
+            font-weight: 500;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #333;
+            border: 2px solid #00f2fe;
+        }
+
+        .timeline-item.completed::before {
+            background: #00f2fe;
+        }
+
+        .timeline-item.active::before {
+            background: #00f2fe;
+            box-shadow: 0 0 10px #00f2fe;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* Map */
+        .map-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+            background: #1a1a2e;
+        }
+
+        .map-caption {
+            padding: 1rem;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Print Button */
+        .print-btn {
+            background: linear-gradient(135deg, #00f2fe, #00e0ff);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .footer {
+            background: #050508;
+            padding: 2rem 5%;
+            text-align: center;
+            color: #666;
+            margin-top: 3rem;
+        }
+
+        @media print {
+            .navbar, .back-link, .print-btn, .footer {
+                display: none;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+            .info-card {
+                background: white;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Globe<span style="color:#00f2fe">Swift</span></a>
+            <a href="tracking.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Tracking</a>
+        </div>
+    </nav>
+
+    <div class="container" id="trackingContent">
+        <div style="text-align: center; padding: 4rem;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 3rem;"></i>
+            <p>Loading tracking information...</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 GlobeSwift Logistics. All rights reserved.</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Complete tracking database - ALL PACKAGES ON THE WAY as in your image
+        const trackingData = {
+            'GL-3722-TAB2NLX6': {
+                status: 'order_confirmed',
+                statusText: 'Order Confirmed',
+                statusDesc: 'Your shipment has been confirmed and is being processed.',
+                lastUpdated: 'Mar 17, 2026 - 09:40 PM',
+                sender: {
+                    name: 'Prince Hamdan Fazza',
+                    country: 'United Arab Emirates',
+                    phone: 'N/A'
+                },
+                receiver: {
+                    name: 'Aleksandar Molan',
+                    phone: '+381692609980',
+                    email: 'molan-aleksandar@hotmail.com'
+                },
+                parcel: {
+                    weight: '2.5 kg',
+                    type: 'Documents',
+                    dutyFees: 'Paid',
+                    pickupDate: 'Mar 26, 2026 - 04:48 PM',
+                    expectedDelivery: 'Mar 28, 2026 - 04:48 PM',
+                    trackingStatus: 'Order Confirmed'
+                },
+                timeline: [
+                    { date: 'Mar 17, 2026 - 09:40 PM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed and is being processed.', completed: true, active: true },
+                    { date: 'Pending', title: 'Picked by Courier', desc: 'Courier will pick up the package', completed: false, active: false },
+                    { date: 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: false, active: false },
+                    { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
+                ],
+                origin: 'United Arab Emirates',
+                destination: 'Serbia',
+                coordinates: [25.2048, 55.2708]
+            },
+            'GL-4521-PK9M3RT7': {
+                status: 'picked',
+                statusText: 'Picked by Courier',
+                statusDesc: 'Your package has been picked up by our courier.',
+                lastUpdated: 'Mar 26, 2026 - 02:30 PM',
+                sender: {
+                    name: 'Ahmed Al Maktoum',
+                    country: 'United Arab Emirates',
+                    phone: '+971 50 123 4567'
+                },
+                receiver: {
+                    name: 'Maria Garcia',
+                    phone: '+34 612 345 678',
+                    email: 'maria.garcia@email.com'
+                },
+                parcel: {
+                    weight: '5.2 kg',
+                    type: 'Electronics',
+                    dutyFees: 'Paid',
+                    pickupDate: 'Mar 26, 2026 - 10:00 AM',
+                    expectedDelivery: 'Mar 28, 2026 - 06:00 PM',
+                    trackingStatus: 'Picked by Courier'
+                },
+                timeline: [
+                    { date: 'Mar 26, 2026 - 10:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
+                    { date: 'Mar 26, 2026 - 02:30 PM', title: 'Picked by Courier', desc: 'Package picked up by courier', completed: true, active: true },
+                    { date: 'Pending', title: 'On The Way', desc: 'Shipment in transit', completed: false, active: false },
+                    { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
+                ],
+                origin: 'United Arab Emirates',
+                destination: 'Spain',
+                coordinates: [25.2048, 55.2708]
+            },
+            'GL-8912-XC4BV9N2': {
+                status: 'onway',
+                statusText: 'On The Way',
+                statusDesc: 'Your shipment is in transit and moving through our network.',
+                lastUpdated: 'Mar 26, 2026 - 08:00 AM',
+                sender: {
+                    name: 'Dubai Logistics Co.',
+                    country: 'United Arab Emirates',
+                    phone: '+971 4 123 4567'
+                },
+                receiver: {
+                    name: 'James Wilson',
+                    phone: '+44 20 7946 0123',
+                    email: 'james.wilson@email.co.uk'
+                },
+                parcel: {
+                    weight: '12.8 kg',
+                    type: 'Commercial Goods',
+                    dutyFees: 'Paid',
+                    pickupDate: 'Mar 25, 2026 - 09:00 AM',
+                    expectedDelivery: 'Mar 27, 2026 - 03:00 PM',
+                    trackingStatus: 'On The Way'
+                },
+                timeline: [
+                    { date: 'Mar 25, 2026 - 09:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
+                    { date: 'Mar 25, 2026 - 02:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
+                    { date: 'Mar 26, 2026 - 08:00 AM', title: 'On The Way', desc: 'Shipment in transit - Dubai Hub', completed: true, active: true },
+                    { date: 'Pending', title: 'Delivered', desc: 'Package delivered', completed: false, active: false }
+                ],
+                origin: 'United Arab Emirates',
+                destination: 'United Kingdom',
+                coordinates: [25.2048, 55.2708]
+            },
+            'GL-2345-DL8F6G1H': {
+                status: 'customs',
+                statusText: 'Custom Hold',
+                statusDesc: 'Shipment is being held for customs clearance.',
+                lastUpdated: 'Mar 26, 2026 - 11:00 AM',
+                sender: {
+                    name: 'Global Trading LLC',
+                    country: 'China',
+                    phone: '+86 10 1234 5678'
+                },
+                receiver: {
+                    name: 'Robert Chen',
+                    phone: '+1 212 555 0123',
+                    email: 'robert.chen@email.com'
+                },
+                parcel: {
+                    weight: '25.0 kg',
+                    type: 'Electronics',
+                    dutyFees: 'Pending',
+                    pickupDate: 'Mar 24, 2026 - 08:00 AM',
+                    expectedDelivery: 'Pending Clearance',
+                    trackingStatus: 'Customs Hold'
+                },
+                timeline: [
+                    { date: 'Mar 24, 2026 - 08:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
+                    { date: 'Mar 24, 2026 - 01:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
+                    { date: 'Mar 25, 2026 - 09:00 AM', title: 'On The Way', desc: 'Shipment in transit', completed: true, active: false },
+                    { date: 'Mar 26, 2026 - 11:00 AM', title: 'Custom Hold', desc: 'Awaiting customs clearance', completed: true, active: true }
+                ],
+                origin: 'China',
+                destination: 'United States',
+                coordinates: [39.9042, 116.4074]
+            },
+            'GL-6789-LM2N5P8Q': {
+                status: 'delivered',
+                statusText: 'Delivered',
+                statusDesc: 'Your package has been successfully delivered.',
+                lastUpdated: 'Mar 26, 2026 - 09:15 AM',
+                sender: {
+                    name: 'Tech Supply Co.',
+                    country: 'Japan',
+                    phone: '+81 3 1234 5678'
+                },
+                receiver: {
+                    name: 'Sarah Johnson',
+                    phone: '+1 310 555 0987',
+                    email: 'sarah.johnson@email.com'
+                },
+                parcel: {
+                    weight: '3.2 kg',
+                    type: 'Electronics',
+                    dutyFees: 'Paid',
+                    pickupDate: 'Mar 20, 2026 - 10:00 AM',
+                    expectedDelivery: 'Mar 26, 2026 - 09:00 AM',
+                    trackingStatus: 'Delivered'
+                },
+                timeline: [
+                    { date: 'Mar 20, 2026 - 10:00 AM', title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
+                    { date: 'Mar 20, 2026 - 03:00 PM', title: 'Picked by Courier', desc: 'Package picked up', completed: true, active: false },
+                    { date: 'Mar 22, 2026 - 08:00 AM', title: 'On The Way', desc: 'Shipment in transit', completed: true, active: false },
+                    { date: 'Mar 26, 2026 - 09:15 AM', title: 'Delivered', desc: 'Signed by: Sarah J.', completed: true, active: true }
+                ],
+                origin: 'Japan',
+                destination: 'United States',
+                coordinates: [35.6762, 139.6503]
+            }
+        };
+
+        let trackingNumber = localStorage.getItem('trackingNumber');
+        if (!trackingNumber || !trackingData[trackingNumber.toUpperCase()]) {
+            trackingNumber = 'GL-3722-TAB2NLX6';
+        } else {
+            trackingNumber = trackingNumber.toUpperCase();
+        }
+
+        const data = trackingData[trackingNumber];
+
+        function getStatusClass(status) {
+            const map = {
+                'order_confirmed': 'status-order-confirmed',
+                'picked': 'status-picked',
+                'onway': 'status-onway',
+                'customs': 'status-customs',
+                'delivered': 'status-delivered'
+            };
+            return map[status];
+        }
+
+        function renderTracking() {
+            const container = document.getElementById('trackingContent');
+            const statusClass = getStatusClass(data.status);
+            
+            container.innerHTML = `
+                <div class="tracking-header">
+                    <div class="tracking-number-box">
+                        <div class="tracking-number">${trackingNumber}</div>
+                        <div class="verified-badge"><i class="fas fa-check-circle"></i> Verified</div>
+                    </div>
+                    <div>
+                        <div class="status-badge ${statusClass}">
+                            <i class="fas ${data.status === 'delivered' ? 'fa-check-circle' : data.status === 'customs' ? 'fa-clock' : 'fa-truck'}"></i> ${data.statusText}
+                        </div>
+                    </div>
+                    <div class="last-updated">
+                        <i class="fas fa-clock"></i> Last Updated: ${data.lastUpdated}
+                    </div>
+                </div>
+
+                <div class="tracking-grid">
+                    <div>
+                        <div class="info-card">
+                            <h3><i class="fas fa-user"></i> Sender Information</h3>
+                            <div class="info-row">
+                                <span class="info-label">Name:</span>
+                                <span class="info-value">${data.sender.name}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Country:</span>
+                                <span class="info-value">${data.sender.country}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone:</span>
+                                <span class="info-value">${data.sender.phone}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-card" style="margin-top: 1.5rem;">
+                            <h3><i class="fas fa-user-check"></i> Receiver Information</h3>
+                            <div class="info-row">
+                                <span class="info-label">Name:</span>
+                                <span class="info-value">${data.receiver.name}</span>
+                            </div>
+                            <div class=
