@@ -254,9 +254,6 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📁 Serving files from: ${__dirname}`);
     
-    // Start keep-alive ping (only in production)
-    if (process.env.NODE_ENV === 'production' || true) {
-        keepAlive();
-    }
+    // Self-ping removed - using UptimeRobot instead
+    // App stays awake via external pings to /ping endpoint
 });
-            
