@@ -7,9 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        /* ========== YOUR EXISTING DOPE STYLES - KEEP ALL ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #fff; overflow-x: hidden; }
         .bg-premium { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: radial-gradient(ellipse at 30% 40%, #0a0a2a, #030308); }
@@ -79,34 +78,6 @@
         .not-found p { color: #888; margin-bottom: 2rem; }
         .not-found-btn { display: inline-block; background: linear-gradient(135deg,#00f2fe,#00e0ff); padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; color: #0a0a0f; font-weight: 600; }
         .footer { background: #030308; padding: 2rem 5%; text-align: center; color: #666; margin-top: 3rem; border-top: 1px solid rgba(0,242,254,0.1); font-size: 0.8rem; }
-
-        /* Invoice Container for PDF */
-        #invoiceContainer {
-            position: fixed;
-            top: -9999px;
-            left: -9999px;
-            width: 800px;
-            background: white;
-            padding: 30px;
-            font-family: 'Inter', sans-serif;
-            color: black;
-        }
-        .invoice-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #00f2fe; }
-        .invoice-header h1 { font-size: 24px; color: #00f2fe; margin-bottom: 5px; }
-        .invoice-header p { color: #666; font-size: 12px; }
-        .tracking-row { background: #f5f5f5; padding: 10px 15px; margin-bottom: 20px; display: flex; justify-content: space-between; border-left: 4px solid #00f2fe; }
-        .tracking-code { font-family: monospace; font-size: 18px; font-weight: bold; }
-        .invoice-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .invoice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .invoice-box { border: 1px solid #ddd; padding: 12px; border-radius: 8px; }
-        .invoice-box h3 { font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .invoice-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12px; }
-        .invoice-label { color: #666; }
-        .invoice-value { font-weight: 500; }
-        .payment-summary { background: #f9f9f9; padding: 12px; border-radius: 8px; margin-top: 10px; }
-        .total-row { border-top: 2px solid #00f2fe; margin-top: 5px; padding-top: 8px; font-weight: bold; }
-        .stamp-section { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; }
-        .invoice-footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 10px; color: #888; }
     </style>
 </head>
 <body>
@@ -136,9 +107,6 @@
             <p style="margin-top: 1rem; color: #888;">Fetching package data...</p>
         </div>
     </div>
-
-    <!-- Hidden Invoice Container for PDF Generation -->
-    <div id="invoiceContainer"></div>
 
     <footer class="footer"><p><i class="fas fa-cloud"></i> GlobeSwift Elite</p></footer>
 
@@ -228,108 +196,111 @@
                     L.marker(coords).addTo(map).bindPopup(`Origin: ${shipmentData.origin}`).openPopup();
                 }
             }, 100);
-            
-            // Build hidden invoice for PDF
-            // Call this directly to generate/download PDF
-           buildInvoicePDF();
         }
 
         function downloadPDF() {
-    const doc = new jsPDF();
-
-    const inv = shipmentData.invoice || {};
-    const now = new Date().toLocaleString();
-    const dutyAmount = shipmentData.parcel?.dutyFeesAmount || shipmentData.parcel?.dutyFeesStatus || 'N/A';
-    const statusText = shipmentData.statusText || shipmentData.status;
-
-    // Status color
-    let statusColor = [0, 242, 254]; // default blue
-    if (statusText === 'Picked by Courier') statusColor = [255, 165, 0];
-    else if (statusText === 'On The Way') statusColor = [0, 255, 255];
-    else if (statusText === 'Custom Hold') statusColor = [255, 68, 68];
-    else if (statusText === 'Delivered') statusColor = [0, 255, 0];
-
-    // Title
-    doc.setFontSize(22);
-    doc.setTextColor(0, 162, 254);
-    doc.text("Globes Swift Logistics", 105, 20, { align: "center" });
-
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text("International Shipping & Logistics Services", 105, 28, { align: "center" });
-    doc.text("support@globeswift.com | https://globeswift.com", 105, 34, { align: "center" });
-
-    // Tracking & Status
-    doc.setDrawColor(...statusColor);
-    doc.setFillColor(...statusColor, 20);
-    doc.rect(10, 40, 190, 10, 'FD');
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text(`Tracking #: ${trackingNumber}`, 15, 47);
-    doc.setTextColor(...statusColor);
-    doc.text(`Status: ${statusText}`, 150, 47);
-
-    // Sender box
-    doc.setDrawColor(200);
-    doc.rect(10, 55, 90, 50);
-    doc.setFontSize(11);
-    doc.setTextColor(0, 162, 254);
-    doc.text("SENDER", 15, 60);
-    doc.setFontSize(10);
-    doc.setTextColor(0);
-    doc.text(`Name: ${shipmentData.sender?.name || 'N/A'}`, 15, 67);
-    doc.text(`Country: ${shipmentData.sender?.country || 'N/A'}`, 15, 74);
-    doc.text(`Address: ${shipmentData.sender?.address || shipmentData.sender?.country || 'N/A'}`, 15, 81);
-    doc.text(`Phone: ${shipmentData.sender?.phone || 'N/A'}`, 15, 88);
-
-    // Receiver box
-    doc.rect(110, 55, 90, 50);
-    doc.setFontSize(11);
-    doc.setTextColor(0, 162, 254);
-    doc.text("RECEIVER", 115, 60);
-    doc.setFontSize(10);
-    doc.setTextColor(0);
-    doc.text(`Name: ${shipmentData.receiver?.name || 'N/A'}`, 115, 67);
-    doc.text(`Country: ${shipmentData.receiver?.country || 'N/A'}`, 115, 74);
-    doc.text(`Address: ${shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A'}`, 115, 81);
-    doc.text(`Phone: ${shipmentData.receiver?.phone || 'N/A'}`, 115, 88);
-    doc.text(`Email: ${shipmentData.receiver?.email || 'N/A'}`, 115, 95);
-
-    // Shipment Details
-    doc.rect(10, 110, 90, 50);
-    doc.setFontSize(11);
-    doc.setTextColor(0, 162, 254);
-    doc.text("SHIPMENT DETAILS", 15, 115);
-    doc.setFontSize(10);
-    doc.setTextColor(0);
-    doc.text(`Order ID: ${inv.orderId || 'N/A'}`, 15, 122);
-    doc.text(`Booking Mode: ${inv.bookingMode || 'N/A'}`, 15, 129);
-    doc.text(`Weight: ${shipmentData.parcel?.weight || 'N/A'}`, 15, 136);
-    doc.text(`Type: ${shipmentData.parcel?.type || 'N/A'}`, 15, 143);
-    doc.text(`Duty Fees: ${dutyAmount}`, 15, 150);
-
-    // Payment Summary
-    doc.rect(110, 110, 90, 50);
-    doc.setFontSize(11);
-    doc.setTextColor(0, 162, 254);
-    doc.text("PAYMENT SUMMARY", 115, 115);
-    doc.setFontSize(10);
-    doc.setTextColor(0);
-    doc.text(`Shipping Cost: ${inv.shipmentCost || 'N/A'}`, 115, 122);
-    doc.text(`Clearance Cost: ${inv.clearanceCost || 'N/A'}`, 115, 129);
-    doc.text(`Total Amount: ${inv.totalAmount || 'N/A'}`, 115, 136);
-    doc.text(`Payment Status: ${inv.paymentStatus || 'To Pay on Delivery'}`, 115, 143);
-
-    // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(150);
-    doc.text(`Generated: ${now}`, 105, 270, { align: "center" });
-    doc.text(`Digitally signed and secured`, 105, 276, { align: "center" });
-
-    // Save PDF
-    doc.save(`GlobeSwift_Invoice_${trackingNumber}.pdf`);
-}
-
+            if (!shipmentData) {
+                alert('No shipment data to download');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const inv = shipmentData.invoice || {};
+            const now = new Date().toLocaleString();
+            const dutyAmount = shipmentData.parcel?.dutyFeesAmount || shipmentData.parcel?.dutyFeesStatus || 'N/A';
+            const statusText = shipmentData.statusText || shipmentData.status;
+            
+            // Title
+            doc.setFontSize(22);
+            doc.setTextColor(0, 162, 254);
+            doc.text("Globes Swift Logistics", 105, 20, { align: "center" });
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text("International Shipping & Logistics Services", 105, 28, { align: "center" });
+            doc.text("support@globeswift.com | https://globeswift.com", 105, 34, { align: "center" });
+            
+            // Tracking & Status
+            doc.setDrawColor(0, 162, 254);
+            doc.setFillColor(230, 247, 255);
+            doc.rect(10, 40, 190, 12, 'F');
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text(`Tracking #: ${trackingNumber}`, 15, 48);
+            doc.setTextColor(0, 162, 254);
+            doc.text(`Status: ${statusText}`, 150, 48);
+            
+            // Sender box
+            doc.setDrawColor(200);
+            doc.rect(10, 55, 90, 50);
+            doc.setFontSize(11);
+            doc.setTextColor(0, 162, 254);
+            doc.text("SENDER", 15, 62);
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.text(`Name: ${shipmentData.sender?.name || 'N/A'}`, 15, 69);
+            doc.text(`Country: ${shipmentData.sender?.country || 'N/A'}`, 15, 76);
+            doc.text(`Address: ${shipmentData.sender?.address || shipmentData.sender?.country || 'N/A'}`, 15, 83);
+            doc.text(`Phone: ${shipmentData.sender?.phone || 'N/A'}`, 15, 90);
+            
+            // Receiver box
+            doc.rect(110, 55, 90, 60);
+            doc.setFontSize(11);
+            doc.setTextColor(0, 162, 254);
+            doc.text("RECEIVER", 115, 62);
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.text(`Name: ${shipmentData.receiver?.name || 'N/A'}`, 115, 69);
+            doc.text(`Country: ${shipmentData.receiver?.country || 'N/A'}`, 115, 76);
+            doc.text(`Address: ${shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A'}`, 115, 83);
+            doc.text(`Phone: ${shipmentData.receiver?.phone || 'N/A'}`, 115, 90);
+            doc.text(`Email: ${shipmentData.receiver?.email || 'N/A'}`, 115, 97);
+            
+            // Shipment Details
+            doc.rect(10, 110, 90, 50);
+            doc.setFontSize(11);
+            doc.setTextColor(0, 162, 254);
+            doc.text("SHIPMENT DETAILS", 15, 117);
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.text(`Order ID: ${inv.orderId || 'N/A'}`, 15, 124);
+            doc.text(`Booking Mode: ${inv.bookingMode || 'N/A'}`, 15, 131);
+            doc.text(`Weight: ${shipmentData.parcel?.weight || 'N/A'}`, 15, 138);
+            doc.text(`Type: ${shipmentData.parcel?.type || 'N/A'}`, 15, 145);
+            doc.text(`Duty Fees: ${dutyAmount}`, 15, 152);
+            
+            // Payment Summary
+            doc.rect(110, 110, 90, 50);
+            doc.setFontSize(11);
+            doc.setTextColor(0, 162, 254);
+            doc.text("PAYMENT SUMMARY", 115, 117);
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.text(`Shipping Cost: ${inv.shipmentCost || 'N/A'}`, 115, 124);
+            doc.text(`Clearance Cost: ${inv.clearanceCost || 'N/A'}`, 115, 131);
+            doc.text(`Total Amount: ${inv.totalAmount || 'N/A'}`, 115, 138);
+            doc.text(`Payment Status: ${inv.paymentStatus || 'To Pay on Delivery'}`, 115, 145);
+            
+            // Stamp
+            doc.setFontSize(10);
+            doc.setTextColor(0, 162, 254);
+            doc.text("Official Stamp", 20, 175);
+            doc.setTextColor(100);
+            doc.text("Verified & Approved", 20, 181);
+            doc.text("Scan to verify", 170, 175);
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text(`Generated: ${now}`, 105, 270, { align: "center" });
+            doc.text("Digitally signed and secured", 105, 276, { align: "center" });
+            
+            // Save PDF
+            doc.save(`GlobeSwift_Invoice_${trackingNumber}.pdf`);
+        }
+        
         function copyTrackingLink() { 
             navigator.clipboard.writeText(window.location.href); 
             alert('✓ Tracking link copied'); 
