@@ -182,7 +182,7 @@
                 <div class="tracking-header">
                     <div class="tracking-number-box">
                         <div class="tracking-number"><i class="fas fa-barcode"></i> ${trackingNumber}</div>
-                        <div class="verified-badge"><i class="fas fa-cloud"></i> MongoDB Cloud | Verified</div>
+                        <div class="verified-badge"><i class="fas fa-cloud"></i> Global Swift | Verified</div>
                     </div>
                     <div><div class="status-badge ${statusClass}"><i class="fas ${shipmentData.status === 'delivered' ? 'fa-check-circle' : shipmentData.status === 'customs' ? 'fa-clock' : 'fa-truck'}"></i> ${shipmentData.statusText || shipmentData.status}</div></div>
                     <div class="last-updated"><i class="fas fa-clock"></i> Last Update: ${shipmentData.lastUpdated || new Date().toLocaleString()}</div>
@@ -235,93 +235,114 @@
         }
 
         function buildInvoiceHTML() {
-            const inv = shipmentData.invoice || {};
-            const now = new Date().toLocaleString();
-            const dutyAmount = shipmentData.parcel?.dutyFeesAmount || 'N/A';
-            const dutyStatus = shipmentData.parcel?.dutyFeesStatus || 'N/A';
-            const dutyDisplay = dutyAmount !== 'N/A' ? dutyAmount : dutyStatus;
-            const statusText = shipmentData.statusText || shipmentData.status;
+    const inv = shipmentData.invoice || {};
+    const now = new Date().toLocaleString();
+    const dutyAmount = shipmentData.parcel?.dutyFeesAmount || 'N/A';
+    const dutyStatus = shipmentData.parcel?.dutyFeesStatus || 'N/A';
+    const dutyDisplay = dutyAmount !== 'N/A' ? dutyAmount : dutyStatus;
+    const statusText = shipmentData.statusText || shipmentData.status;
+    
+    let statusColor = '#00f2fe';
+    if (statusText === 'Picked by Courier') statusColor = '#ffa500';
+    else if (statusText === 'On The Way') statusColor = '#0ff';
+    else if (statusText === 'Custom Hold') statusColor = '#ff4444';
+    else if (statusText === 'Delivered') statusColor = '#0f0';
+    
+    // Get addresses with fallbacks
+    const senderAddress = shipmentData.sender?.address || shipmentData.sender?.country || 'N/A';
+    const receiverAddress = shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A';
+    
+    const invoiceHTML = `
+        <div style="padding: 30px; font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #00f2fe;">
+                <h1 style="font-size: 28px; color: #00f2fe; margin-bottom: 5px;">Globes Swift Logistics</h1>
+                <p style="color: #666; font-size: 12px;">International Shipping & Logistics Services</p>
+                <p style="color: #666; font-size: 11px;">support@globeswift.com | https://globeswift.com</p>
+            </div>
             
-            let statusColor = '#00f2fe';
-            if (statusText === 'Picked by Courier') statusColor = '#ffa500';
-            else if (statusText === 'On The Way') statusColor = '#0ff';
-            else if (statusText === 'Custom Hold') statusColor = '#ff4444';
-            else if (statusText === 'Delivered') statusColor = '#0f0';
+            <div style="background: #f5f5f5; padding: 12px 18px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00f2fe;">
+                <span style="font-family: monospace; font-size: 18px; font-weight: bold;"><i class="fas fa-barcode"></i> ${trackingNumber}</span>
+                <span style="padding: 5px 14px; border-radius: 25px; font-size: 12px; font-weight: bold; background: ${statusColor}20; color: ${statusColor};">${statusText}</span>
+            </div>
             
-            const invoiceHTML = `
-                <div class="invoice-header">
-                    <h1>Globes Swift Logistics</h1>
-                    <p>International Shipping & Logistics Services</p>
-                    <p>support@globeswift.com | https://globeswift.com</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">SENDER</h3>
+                    <div style="margin-bottom: 6px;"><strong>Name:</strong> ${shipmentData.sender?.name || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Country:</strong> ${shipmentData.sender?.country || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Address:</strong> ${senderAddress}</div>
+                    <div style="margin-bottom: 6px;"><strong>Phone:</strong> ${shipmentData.sender?.phone || 'N/A'}</div>
                 </div>
-                
-                <div class="tracking-row">
-                    <span class="tracking-code"><i class="fas fa-barcode"></i> ${trackingNumber}</span>
-                    <span class="invoice-status" style="background:${statusColor}20; color:${statusColor}">${statusText}</span>
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">RECEIVER</h3>
+                    <div style="margin-bottom: 6px;"><strong>Name:</strong> ${shipmentData.receiver?.name || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Country:</strong> ${shipmentData.receiver?.country || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Address:</strong> ${receiverAddress}</div>
+                    <div style="margin-bottom: 6px;"><strong>Phone:</strong> ${shipmentData.receiver?.phone || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Email:</strong> ${shipmentData.receiver?.email || 'N/A'}</div>
                 </div>
-                
-                <div class="invoice-grid">
-                    <div class="invoice-box">
-                        <h3>SENDER</h3>
-                        <div class="invoice-row"><span class="invoice-label">Name:</span><span class="invoice-value">${shipmentData.sender?.name || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Country:</span><span class="invoice-value">${shipmentData.sender?.country || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Address:</span><span class="invoice-value">${shipmentData.sender?.address || shipmentData.sender?.country || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Phone:</span><span class="invoice-value">${shipmentData.sender?.phone || 'N/A'}</span></div>
-                    </div>
-                    <div class="invoice-box">
-                        <h3>RECEIVER</h3>
-                        <div class="invoice-row"><span class="invoice-label">Name:</span><span class="invoice-value">${shipmentData.receiver?.name || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Country:</span><span class="invoice-value">${shipmentData.receiver?.country || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Address:</span><span class="invoice-value">${shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Phone:</span><span class="invoice-value">${shipmentData.receiver?.phone || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Email:</span><span class="invoice-value">${shipmentData.receiver?.email || 'N/A'}</span></div>
-                    </div>
-                </div>
-                
-                <div class="invoice-grid">
-                    <div class="invoice-box">
-                        <h3>SHIPMENT DETAILS</h3>
-                        <div class="invoice-row"><span class="invoice-label">Order ID:</span><span class="invoice-value">${inv.orderId || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Booking Mode:</span><span class="invoice-value">${inv.bookingMode || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Weight:</span><span class="invoice-value">${shipmentData.parcel?.weight || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Type:</span><span class="invoice-value">${shipmentData.parcel?.type || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Duty Fees:</span><span class="invoice-value" style="color:${dutyStatus === 'Paid' ? 'green' : 'orange'}">${dutyDisplay}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Pickup Date:</span><span class="invoice-value">${shipmentData.parcel?.pickupDate || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Expected Delivery:</span><span class="invoice-value">${shipmentData.parcel?.expectedDelivery || 'Pending'}</span></div>
-                    </div>
-                    <div class="invoice-box">
-                        <h3>PAYMENT SUMMARY</h3>
-                        <div class="invoice-row"><span class="invoice-label">Shipping Cost:</span><span class="invoice-value">${inv.shipmentCost || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Clearance Cost:</span><span class="invoice-value">${inv.clearanceCost || 'N/A'}</span></div>
-                        <div class="invoice-row total-row"><span class="invoice-label">TOTAL AMOUNT:</span><span class="invoice-value" style="font-weight:bold;">${inv.totalAmount || 'N/A'}</span></div>
-                        <div class="invoice-row"><span class="invoice-label">Payment Status:</span><span class="invoice-value" style="color:${inv.paymentStatus === 'Paid' ? 'green' : 'orange'}">${inv.paymentStatus || 'To Pay on Delivery'}</span></div>
-                    </div>
-                </div>
-                
-                <div class="stamp-section">
-                    <div style="text-align:center;"><div style="font-size:30px;">📌</div><div>Official Stamp</div><small>Verified & Approved</small></div>
-                    <div style="text-align:right;"><div style="width:60px; height:60px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; margin-bottom:5px; border-radius:8px;"><i class="fas fa-qrcode" style="font-size:30px;"></i></div><small>Scan to verify</small></div>
-                </div>
-                
-                <div class="invoice-footer">
-                    <p><i class="fas fa-clock"></i> ${now}</p>
-                    <p>Digitally signed and secured</p>
-                </div>
-            `;
+            </div>
             
-            document.getElementById('invoiceContainer').innerHTML = invoiceHTML;
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">SHIPMENT DETAILS</h3>
+                    <div style="margin-bottom: 6px;"><strong>Order ID:</strong> ${inv.orderId || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Booking Mode:</strong> ${inv.bookingMode || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Weight:</strong> ${shipmentData.parcel?.weight || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Type:</strong> ${shipmentData.parcel?.type || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Duty Fees:</strong> <span style="color: ${dutyStatus === 'Paid' ? 'green' : 'orange'}">${dutyDisplay}</span></div>
+                    <div style="margin-bottom: 6px;"><strong>Pickup Date:</strong> ${shipmentData.parcel?.pickupDate || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Expected Delivery:</strong> ${shipmentData.parcel?.expectedDelivery || 'Pending'}</div>
+                </div>
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">PAYMENT SUMMARY</h3>
+                    <div style="margin-bottom: 6px;"><strong>Shipping Cost:</strong> ${inv.shipmentCost || 'N/A'}</div>
+                    <div style="margin-bottom: 6px;"><strong>Clearance Cost:</strong> ${inv.clearanceCost || 'N/A'}</div>
+                    <div style="border-top: 2px solid #00f2fe; margin-top: 8px; padding-top: 8px; font-weight: bold;"><strong>TOTAL AMOUNT:</strong> ${inv.totalAmount || 'N/A'}</div>
+                    <div style="margin-top: 6px;"><strong>Payment Status:</strong> <span style="color: ${inv.paymentStatus === 'Paid' ? 'green' : 'orange'}">${inv.paymentStatus || 'To Pay on Delivery'}</span></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc;">
+                <div style="text-align: center;">
+                    <div style="font-size: 30px;">📌</div>
+                    <div style="font-size: 12px;">Official Stamp</div>
+                    <small style="color: #888;">Verified & Approved</small>
+                </div>
+                <div style="text-align: right;">
+                    <div style="width: 60px; height: 60px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; border-radius: 8px; margin-left: auto;">
+                        <i class="fas fa-qrcode" style="font-size: 30px; color: #00f2fe;"></i>
+                    </div>
+                    <small style="color: #888;">Scan to verify</small>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 10px; color: #888;">
+                <p><i class="fas fa-clock"></i> ${now}</p>
+                <p>Digitally signed and secured</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('invoiceContainer').innerHTML = invoiceHTML;
         }
 
         function downloadPDF() {
-            const element = document.getElementById('invoiceContainer');
-            const opt = {
-                margin: [0.5, 0.5, 0.5, 0.5],
-                filename: `GlobeSwift_Invoice_${trackingNumber}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, letterRendering: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
+    const element = document.getElementById('invoiceContainer');
+    if (!element || !element.innerHTML.trim()) {
+        alert('No invoice data to download');
+        return;
+    }
+    
+    const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `GlobeSwift_Invoice_${trackingNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(element).save();
         }
 
         function copyTrackingLink() { 
