@@ -212,93 +212,192 @@
             const dutyAmount = shipmentData.parcel?.dutyFeesAmount || shipmentData.parcel?.dutyFeesStatus || 'N/A';
             const statusText = shipmentData.statusText || shipmentData.status;
             
-            // Title
+            // ========== LOGO SECTION ==========
+            // Create a circular logo with "GS"
+            doc.setFillColor(0, 162, 254);
+            doc.circle(20, 15, 6, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text("GS", 17, 18);
+            
+            // Company name with logo
+            doc.setTextColor(0, 162, 254);
             doc.setFontSize(22);
-            doc.setTextColor(0, 162, 254);
-            doc.text("Globes Swift Logistics", 105, 20, { align: "center" });
+            doc.setFont('helvetica', 'bold');
+            doc.text("Globes Swift Logistics", 35, 19);
             
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text("International Shipping & Logistics Services", 105, 28, { align: "center" });
-            doc.text("support@globeswift.com | https://globeswift.com", 105, 34, { align: "center" });
-            
-            // Tracking & Status
-            doc.setDrawColor(0, 162, 254);
-            doc.setFillColor(230, 247, 255);
-            doc.rect(10, 40, 190, 12, 'F');
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-            doc.text(`Tracking #: ${trackingNumber}`, 15, 48);
-            doc.setTextColor(0, 162, 254);
-            doc.text(`Status: ${statusText}`, 150, 48);
-            
-            // Sender box
-            doc.setDrawColor(200);
-            doc.rect(10, 55, 90, 50);
-            doc.setFontSize(11);
-            doc.setTextColor(0, 162, 254);
-            doc.text("SENDER", 15, 62);
-            doc.setFontSize(10);
-            doc.setTextColor(0);
-            doc.text(`Name: ${shipmentData.sender?.name || 'N/A'}`, 15, 69);
-            doc.text(`Country: ${shipmentData.sender?.country || 'N/A'}`, 15, 76);
-            doc.text(`Address: ${shipmentData.sender?.address || shipmentData.sender?.country || 'N/A'}`, 15, 83);
-            doc.text(`Phone: ${shipmentData.sender?.phone || 'N/A'}`, 15, 90);
-            
-            // Receiver box
-            doc.rect(110, 55, 90, 60);
-            doc.setFontSize(11);
-            doc.setTextColor(0, 162, 254);
-            doc.text("RECEIVER", 115, 62);
-            doc.setFontSize(10);
-            doc.setTextColor(0);
-            doc.text(`Name: ${shipmentData.receiver?.name || 'N/A'}`, 115, 69);
-            doc.text(`Country: ${shipmentData.receiver?.country || 'N/A'}`, 115, 76);
-            doc.text(`Address: ${shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A'}`, 115, 83);
-            doc.text(`Phone: ${shipmentData.receiver?.phone || 'N/A'}`, 115, 90);
-            doc.text(`Email: ${shipmentData.receiver?.email || 'N/A'}`, 115, 97);
-            
-            // Shipment Details
-            doc.rect(10, 110, 90, 50);
-            doc.setFontSize(11);
-            doc.setTextColor(0, 162, 254);
-            doc.text("SHIPMENT DETAILS", 15, 117);
-            doc.setFontSize(10);
-            doc.setTextColor(0);
-            doc.text(`Order ID: ${inv.orderId || 'N/A'}`, 15, 124);
-            doc.text(`Booking Mode: ${inv.bookingMode || 'N/A'}`, 15, 131);
-            doc.text(`Weight: ${shipmentData.parcel?.weight || 'N/A'}`, 15, 138);
-            doc.text(`Type: ${shipmentData.parcel?.type || 'N/A'}`, 15, 145);
-            doc.text(`Duty Fees: ${dutyAmount}`, 15, 152);
-            
-            // Payment Summary
-            doc.rect(110, 110, 90, 50);
-            doc.setFontSize(11);
-            doc.setTextColor(0, 162, 254);
-            doc.text("PAYMENT SUMMARY", 115, 117);
-            doc.setFontSize(10);
-            doc.setTextColor(0);
-            doc.text(`Shipping Cost: ${inv.shipmentCost || 'N/A'}`, 115, 124);
-            doc.text(`Clearance Cost: ${inv.clearanceCost || 'N/A'}`, 115, 131);
-            doc.text(`Total Amount: ${inv.totalAmount || 'N/A'}`, 115, 138);
-            doc.text(`Payment Status: ${inv.paymentStatus || 'To Pay on Delivery'}`, 115, 145);
-            
-            // Stamp
-            doc.setFontSize(10);
-            doc.setTextColor(0, 162, 254);
-            doc.text("Official Stamp", 20, 175);
-            doc.setTextColor(100);
-            doc.text("Verified & Approved", 20, 181);
-            doc.text("Scan to verify", 170, 175);
-            
-            // Footer
             doc.setFontSize(8);
-            doc.setTextColor(150);
-            doc.text(`Generated: ${now}`, 105, 270, { align: "center" });
-            doc.text("Digitally signed and secured", 105, 276, { align: "center" });
+            doc.setTextColor(100);
+            doc.setFont('helvetica', 'normal');
+            doc.text("International Shipping & Logistics Services", 35, 26);
+            doc.text("info@globeswift.com | www.globeswift.com", 35, 31);
             
-            // Save PDF
-            doc.save(`GlobeSwift_Invoice_${trackingNumber}.pdf`);
+            // ========== TRACKING NUMBER ROW ==========
+            doc.setDrawColor(0, 162, 254);
+            doc.setFillColor(245, 250, 255);
+            doc.rect(10, 42, 190, 10, 'F');
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Tracking Number: ${trackingNumber}`, 15, 49);
+            doc.setTextColor(0, 162, 254);
+            doc.text("✓ Verified", 160, 49);
+            
+            // ========== SENDER & RECEIVER ==========
+            doc.setDrawColor(220, 220, 220);
+            
+            // Sender Box
+            doc.rect(10, 58, 90, 48);
+            doc.setFontSize(9);
+            doc.setTextColor(0, 162, 254);
+            doc.setFont('helvetica', 'bold');
+            doc.text("SENDER", 15, 65);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(50);
+            doc.setFontSize(8);
+            doc.text(`${shipmentData.sender?.name || 'N/A'}`, 15, 73);
+            doc.text(`${shipmentData.sender?.country || 'N/A'}`, 15, 80);
+            doc.text(`${shipmentData.sender?.address || shipmentData.sender?.country || 'N/A'}`, 15, 87);
+            doc.text(`${shipmentData.sender?.phone || 'N/A'}`, 15, 94);
+            
+            // Receiver Box
+            doc.rect(110, 58, 90, 55);
+            doc.setFontSize(9);
+            doc.setTextColor(0, 162, 254);
+            doc.setFont('helvetica', 'bold');
+            doc.text("RECEIVER", 115, 65);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(50);
+            doc.setFontSize(8);
+            doc.text(`${shipmentData.receiver?.name || 'N/A'}`, 115, 73);
+            doc.text(`${shipmentData.receiver?.country || 'N/A'}`, 115, 80);
+            doc.text(`${shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A'}`, 115, 87);
+            doc.text(`${shipmentData.receiver?.phone || 'N/A'}`, 115, 94);
+            doc.text(`${shipmentData.receiver?.email || 'N/A'}`, 115, 101);
+            
+            // ========== SHIPMENT DETAILS TABLE ==========
+            doc.setFontSize(9);
+            doc.setTextColor(0, 162, 254);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Shipment Details", 10, 114);
+            
+            // Table Header
+            doc.setFillColor(245, 250, 255);
+            doc.rect(10, 118, 190, 7, 'F');
+            doc.setFontSize(7);
+            doc.setTextColor(100);
+            doc.text("Order ID", 12, 123);
+            doc.text("Booking Mode", 55, 123);
+            doc.text("Shipment Cost", 100, 123);
+            doc.text("Status", 150, 123);
+            
+            // Table Row
+            doc.rect(10, 125, 190, 8);
+            doc.setTextColor(0);
+            doc.text(inv.orderId || 'N/A', 12, 131);
+            doc.text(inv.bookingMode || 'N/A', 55, 131);
+            doc.text(inv.shipmentCost || 'N/A', 100, 131);
+            doc.text(statusText, 150, 131);
+            
+            // ========== PARCEL DETAILS TABLE ==========
+            doc.setFontSize(9);
+            doc.setTextColor(0, 162, 254);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Parcel Details & Costs", 10, 141);
+            
+            // Table Header
+            doc.setFillColor(245, 250, 255);
+            doc.rect(10, 145, 190, 7, 'F');
+            doc.setFontSize(6);
+            doc.setTextColor(100);
+            doc.text("QTY", 12, 150);
+            doc.text("PRODUCT", 28, 150);
+            doc.text("STATUS", 65, 150);
+            doc.text("DESCRIPTION", 90, 150);
+            doc.text("SHIPPING", 125, 150);
+            doc.text("CLEARANCE", 145, 150);
+            doc.text("TOTAL", 170, 150);
+            
+            // Table Row
+            doc.rect(10, 152, 190, 10);
+            doc.setTextColor(0);
+            doc.text("1", 12, 159);
+            doc.text("Parcel", 28, 159);
+            doc.text(statusText, 65, 159);
+            doc.text(shipmentData.parcel?.type || 'N/A', 90, 159);
+            doc.text(inv.shipmentCost || 'N/A', 125, 159);
+            doc.text(inv.clearanceCost || 'N/A', 145, 159);
+            doc.text(inv.totalAmount || 'N/A', 170, 159);
+            
+            // ========== PAYMENT METHODS ==========
+            doc.setFontSize(9);
+            doc.setTextColor(0, 162, 254);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Payment Methods", 10, 170);
+            doc.setFontSize(7);
+            doc.setTextColor(100);
+            doc.text("For your convenience we offer several payment options:", 10, 176);
+            doc.setTextColor(0);
+            doc.text("✓ Credit Card", 12, 182);
+            doc.text("✓ Bank Transfer", 12, 187);
+            doc.text("✓ Cash on Delivery", 12, 192);
+            
+            // ========== PAYMENT SUMMARY ==========
+            doc.setDrawColor(0, 162, 254);
+            doc.setFillColor(248, 252, 255);
+            doc.rect(120, 170, 80, 32, 'F');
+            doc.setFontSize(8);
+            doc.setTextColor(0, 162, 254);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Payment Summary", 125, 177);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0);
+            doc.text(`Shipping: ${inv.shipmentCost || 'N/A'}`, 125, 184);
+            doc.text(`Clearance: ${inv.clearanceCost || 'N/A'}`, 125, 190);
+            doc.setDrawColor(0, 162, 254);
+            doc.line(125, 194, 195, 194);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Total: ${inv.totalAmount || 'N/A'}`, 125, 200);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Status: ${inv.paymentStatus || 'To Pay on Delivery'}`, 125, 206);
+            
+            // ========== STAMP & QR CODE ==========
+            // Official Stamp
+            doc.setDrawColor(200);
+            doc.rect(10, 205, 55, 22);
+            doc.setFontSize(8);
+            doc.setTextColor(0, 162, 254);
+            doc.setFont('helvetica', 'bold');
+            doc.text("OFFICIAL STAMP", 15, 212);
+            doc.setFontSize(6);
+            doc.setTextColor(100);
+            doc.text("Verified & Approved", 15, 219);
+            
+            // QR Code Placeholder
+            doc.setDrawColor(200);
+            doc.rect(145, 205, 55, 22);
+            doc.setFontSize(8);
+            doc.setTextColor(0, 162, 254);
+            doc.text("QR CODE", 165, 213);
+            doc.setFontSize(6);
+            doc.setTextColor(100);
+            doc.text("Scan to verify", 160, 220);
+            
+            // ========== FOOTER ==========
+            doc.setDrawColor(220);
+            doc.line(10, 235, 200, 235);
+            doc.setFontSize(7);
+            doc.setTextColor(150);
+            doc.text(`Generated: ${now}`, 105, 245, { align: "center" });
+            doc.text("Digitally signed and secured", 105, 251, { align: "center" });
+            
+            // ========== SAVE PDF ==========
+            const fileName = `GlobeSwift_Invoice_${trackingNumber}.pdf`;
+            doc.save(fileName);
+            
+            // Show success message
+            console.log(`✅ Invoice downloaded: ${fileName}`);
         }
         
         function copyTrackingLink() { 
