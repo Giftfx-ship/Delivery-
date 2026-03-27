@@ -230,119 +230,105 @@
             }, 100);
             
             // Build hidden invoice for PDF
-            buildInvoiceHTML();
+            // Call this directly to generate/download PDF
+           buildInvoicePDF();
         }
 
-        function buildInvoiceHTML() {
+        function downloadInvoicePDF() {
+    const doc = new jsPDF();
+
     const inv = shipmentData.invoice || {};
     const now = new Date().toLocaleString();
-    const dutyAmount = shipmentData.parcel?.dutyFeesAmount || 'N/A';
-    const dutyStatus = shipmentData.parcel?.dutyFeesStatus || 'N/A';
-    const dutyDisplay = dutyAmount !== 'N/A' ? dutyAmount : dutyStatus;
+    const dutyAmount = shipmentData.parcel?.dutyFeesAmount || shipmentData.parcel?.dutyFeesStatus || 'N/A';
     const statusText = shipmentData.statusText || shipmentData.status;
-    
-    let statusColor = '#00f2fe';
-    if (statusText === 'Picked by Courier') statusColor = '#ffa500';
-    else if (statusText === 'On The Way') statusColor = '#0ff';
-    else if (statusText === 'Custom Hold') statusColor = '#ff4444';
-    else if (statusText === 'Delivered') statusColor = '#0f0';
-    
-    // Get addresses with fallbacks
-    const senderAddress = shipmentData.sender?.address || shipmentData.sender?.country || 'N/A';
-    const receiverAddress = shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A';
-    
-    const invoiceHTML = `
-        <div style="padding: 30px; font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #00f2fe;">
-                <h1 style="font-size: 28px; color: #00f2fe; margin-bottom: 5px;">Globes Swift Logistics</h1>
-                <p style="color: #666; font-size: 12px;">International Shipping & Logistics Services</p>
-                <p style="color: #666; font-size: 11px;">support@globeswift.com | https://globeswift.com</p>
-            </div>
-            
-            <div style="background: #f5f5f5; padding: 12px 18px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00f2fe;">
-                <span style="font-family: monospace; font-size: 18px; font-weight: bold;"><i class="fas fa-barcode"></i> ${trackingNumber}</span>
-                <span style="padding: 5px 14px; border-radius: 25px; font-size: 12px; font-weight: bold; background: ${statusColor}20; color: ${statusColor};">${statusText}</span>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
-                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
-                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">SENDER</h3>
-                    <div style="margin-bottom: 6px;"><strong>Name:</strong> ${shipmentData.sender?.name || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Country:</strong> ${shipmentData.sender?.country || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Address:</strong> ${senderAddress}</div>
-                    <div style="margin-bottom: 6px;"><strong>Phone:</strong> ${shipmentData.sender?.phone || 'N/A'}</div>
-                </div>
-                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
-                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">RECEIVER</h3>
-                    <div style="margin-bottom: 6px;"><strong>Name:</strong> ${shipmentData.receiver?.name || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Country:</strong> ${shipmentData.receiver?.country || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Address:</strong> ${receiverAddress}</div>
-                    <div style="margin-bottom: 6px;"><strong>Phone:</strong> ${shipmentData.receiver?.phone || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Email:</strong> ${shipmentData.receiver?.email || 'N/A'}</div>
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
-                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
-                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">SHIPMENT DETAILS</h3>
-                    <div style="margin-bottom: 6px;"><strong>Order ID:</strong> ${inv.orderId || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Booking Mode:</strong> ${inv.bookingMode || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Weight:</strong> ${shipmentData.parcel?.weight || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Type:</strong> ${shipmentData.parcel?.type || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Duty Fees:</strong> <span style="color: ${dutyStatus === 'Paid' ? 'green' : 'orange'}">${dutyDisplay}</span></div>
-                    <div style="margin-bottom: 6px;"><strong>Pickup Date:</strong> ${shipmentData.parcel?.pickupDate || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Expected Delivery:</strong> ${shipmentData.parcel?.expectedDelivery || 'Pending'}</div>
-                </div>
-                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
-                    <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #00f2fe; border-bottom: 1px solid #eee; padding-bottom: 5px;">PAYMENT SUMMARY</h3>
-                    <div style="margin-bottom: 6px;"><strong>Shipping Cost:</strong> ${inv.shipmentCost || 'N/A'}</div>
-                    <div style="margin-bottom: 6px;"><strong>Clearance Cost:</strong> ${inv.clearanceCost || 'N/A'}</div>
-                    <div style="border-top: 2px solid #00f2fe; margin-top: 8px; padding-top: 8px; font-weight: bold;"><strong>TOTAL AMOUNT:</strong> ${inv.totalAmount || 'N/A'}</div>
-                    <div style="margin-top: 6px;"><strong>Payment Status:</strong> <span style="color: ${inv.paymentStatus === 'Paid' ? 'green' : 'orange'}">${inv.paymentStatus || 'To Pay on Delivery'}</span></div>
-                </div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc;">
-                <div style="text-align: center;">
-                    <div style="font-size: 30px;">📌</div>
-                    <div style="font-size: 12px;">Official Stamp</div>
-                    <small style="color: #888;">Verified & Approved</small>
-                </div>
-                <div style="text-align: right;">
-                    <div style="width: 60px; height: 60px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; border-radius: 8px; margin-left: auto;">
-                        <i class="fas fa-qrcode" style="font-size: 30px; color: #00f2fe;"></i>
-                    </div>
-                    <small style="color: #888;">Scan to verify</small>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 10px; color: #888;">
-                <p><i class="fas fa-clock"></i> ${now}</p>
-                <p>Digitally signed and secured</p>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('invoiceContainer').innerHTML = invoiceHTML;
-        }
 
-        function downloadPDF() {
-    const element = document.getElementById('invoiceContainer');
-    if (!element || !element.innerHTML.trim()) {
-        alert('No invoice data to download');
-        return;
-    }
-    
-    const opt = {
-        margin: [0.5, 0.5, 0.5, 0.5],
-        filename: `GlobeSwift_Invoice_${trackingNumber}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, letterRendering: true },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    
-    html2pdf().set(opt).from(element).save();
-        }
+    // Status color
+    let statusColor = [0, 242, 254]; // default blue
+    if (statusText === 'Picked by Courier') statusColor = [255, 165, 0];
+    else if (statusText === 'On The Way') statusColor = [0, 255, 255];
+    else if (statusText === 'Custom Hold') statusColor = [255, 68, 68];
+    else if (statusText === 'Delivered') statusColor = [0, 255, 0];
+
+    // Title
+    doc.setFontSize(22);
+    doc.setTextColor(0, 162, 254);
+    doc.text("Globes Swift Logistics", 105, 20, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text("International Shipping & Logistics Services", 105, 28, { align: "center" });
+    doc.text("support@globeswift.com | https://globeswift.com", 105, 34, { align: "center" });
+
+    // Tracking & Status
+    doc.setDrawColor(...statusColor);
+    doc.setFillColor(...statusColor, 20);
+    doc.rect(10, 40, 190, 10, 'FD');
+    doc.setFontSize(12);
+    doc.setTextColor(0);
+    doc.text(`Tracking #: ${trackingNumber}`, 15, 47);
+    doc.setTextColor(...statusColor);
+    doc.text(`Status: ${statusText}`, 150, 47);
+
+    // Sender box
+    doc.setDrawColor(200);
+    doc.rect(10, 55, 90, 50);
+    doc.setFontSize(11);
+    doc.setTextColor(0, 162, 254);
+    doc.text("SENDER", 15, 60);
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Name: ${shipmentData.sender?.name || 'N/A'}`, 15, 67);
+    doc.text(`Country: ${shipmentData.sender?.country || 'N/A'}`, 15, 74);
+    doc.text(`Address: ${shipmentData.sender?.address || shipmentData.sender?.country || 'N/A'}`, 15, 81);
+    doc.text(`Phone: ${shipmentData.sender?.phone || 'N/A'}`, 15, 88);
+
+    // Receiver box
+    doc.rect(110, 55, 90, 50);
+    doc.setFontSize(11);
+    doc.setTextColor(0, 162, 254);
+    doc.text("RECEIVER", 115, 60);
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Name: ${shipmentData.receiver?.name || 'N/A'}`, 115, 67);
+    doc.text(`Country: ${shipmentData.receiver?.country || 'N/A'}`, 115, 74);
+    doc.text(`Address: ${shipmentData.receiver?.address || shipmentData.receiver?.country || 'N/A'}`, 115, 81);
+    doc.text(`Phone: ${shipmentData.receiver?.phone || 'N/A'}`, 115, 88);
+    doc.text(`Email: ${shipmentData.receiver?.email || 'N/A'}`, 115, 95);
+
+    // Shipment Details
+    doc.rect(10, 110, 90, 50);
+    doc.setFontSize(11);
+    doc.setTextColor(0, 162, 254);
+    doc.text("SHIPMENT DETAILS", 15, 115);
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Order ID: ${inv.orderId || 'N/A'}`, 15, 122);
+    doc.text(`Booking Mode: ${inv.bookingMode || 'N/A'}`, 15, 129);
+    doc.text(`Weight: ${shipmentData.parcel?.weight || 'N/A'}`, 15, 136);
+    doc.text(`Type: ${shipmentData.parcel?.type || 'N/A'}`, 15, 143);
+    doc.text(`Duty Fees: ${dutyAmount}`, 15, 150);
+
+    // Payment Summary
+    doc.rect(110, 110, 90, 50);
+    doc.setFontSize(11);
+    doc.setTextColor(0, 162, 254);
+    doc.text("PAYMENT SUMMARY", 115, 115);
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Shipping Cost: ${inv.shipmentCost || 'N/A'}`, 115, 122);
+    doc.text(`Clearance Cost: ${inv.clearanceCost || 'N/A'}`, 115, 129);
+    doc.text(`Total Amount: ${inv.totalAmount || 'N/A'}`, 115, 136);
+    doc.text(`Payment Status: ${inv.paymentStatus || 'To Pay on Delivery'}`, 115, 143);
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(150);
+    doc.text(`Generated: ${now}`, 105, 270, { align: "center" });
+    doc.text(`Digitally signed and secured`, 105, 276, { align: "center" });
+
+    // Save PDF
+    doc.save(`GlobeSwift_Invoice_${trackingNumber}.pdf`);
+}
 
         function copyTrackingLink() { 
             navigator.clipboard.writeText(window.location.href); 
