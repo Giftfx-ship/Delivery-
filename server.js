@@ -2,7 +2,7 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const path = require('path');
-const fetch = require('node-fetch'); // ← ADD THIS
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
