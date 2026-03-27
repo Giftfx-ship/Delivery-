@@ -42,7 +42,7 @@ async function initDefaultData() {
                 sender: { name: 'Prince Hamdan Fazza', country: 'United Arab Emirates', address: 'Abu Dhabi, Dubai', phone: 'N/A' },
                 receiver: { name: 'Aleksandar Molan', country: 'Serbia', address: 'Belgrade, Serbia', phone: '+381692609980', email: 'molan-aleksandar@hotmail.com' },
                 parcel: { weight: '2.5 kg', type: 'Documents', dutyFeesStatus: 'Paid', dutyFeesAmount: 'EUR 25.00', dutyFeesDisplay: 'EUR 25.00', pickupDate: now, expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Order Confirmed' },
-                invoice: { orderId: '326', bookingMode: 'ToPay', shipmentCost: 'EUR 300', clearanceCost: 'EUR 350', totalAmount: 'EUR 650', paymentStatus: 'To Pay on Delivery', paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery'] },
+                invoice: { orderId: '326', bookingMode: 'ToPay', shipmentCost: 'EUR 300', clearanceCost: 'EUR 350', totalAmount: 'EUR 650', paymentStatus: 'To Pay on Delivery' },
                 timeline: [
                     { date: now, title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: true },
                     { date: 'Pending', title: 'Picked by Courier', desc: 'Courier will pick up the package', completed: false, active: false },
@@ -60,7 +60,7 @@ async function initDefaultData() {
                 sender: { name: 'Ahmed Al Maktoum', country: 'United Arab Emirates', address: 'Dubai Logistics Hub', phone: '+971 50 123 4567' },
                 receiver: { name: 'Maria Garcia', country: 'Spain', address: 'Madrid, Spain', phone: '+34 612 345 678', email: 'maria.garcia@email.com' },
                 parcel: { weight: '5.2 kg', type: 'Electronics', dutyFeesStatus: 'Paid', dutyFeesAmount: 'EUR 45.00', dutyFeesDisplay: 'EUR 45.00', pickupDate: now, expectedDelivery: 'Mar 28, 2026', trackingStatus: 'Picked by Courier' },
-                invoice: { orderId: '452', bookingMode: 'Prepaid', shipmentCost: 'EUR 450', clearanceCost: 'EUR 200', totalAmount: 'EUR 650', paymentStatus: 'Paid', paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery'] },
+                invoice: { orderId: '452', bookingMode: 'Prepaid', shipmentCost: 'EUR 450', clearanceCost: 'EUR 200', totalAmount: 'EUR 650', paymentStatus: 'Paid' },
                 timeline: [
                     { date: now, title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: true, active: false },
                     { date: now, title: 'Picked by Courier', desc: 'Package picked up by courier', completed: true, active: true },
@@ -77,10 +77,7 @@ async function initDefaultData() {
 
 connectDB();
 
-// ============================================
-// API ENDPOINTS
-// ============================================
-
+// API Endpoints
 app.get('/api/shipments', async (req, res) => {
     try {
         const shipments = await shipmentsCollection.find({}).toArray();
@@ -110,31 +107,27 @@ app.get('/api/shipments/:trackingCode', async (req, res) => {
     try {
         const trackingCode = req.params.trackingCode.toUpperCase();
         const shipment = await shipmentsCollection.findOne({ trackingCode });
-        if (!shipment) {
-            return res.status(404).json({ error: 'Shipment not found' });
-        }
-        const { _id, ...shipmentData } = shipment;
-        res.json(shipmentData);
+        if (!shipment) return res.status(404).json({ error: 'Shipment not found' });
+        const { _id, ...data } = shipment;
+        res.json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// CREATE NEW SHIPMENT - FIXED VERSION
 app.post('/api/shipments', async (req, res) => {
     try {
         const { trackingCode, ...shipmentData } = req.body;
-        const upperCode = trackingCode.toUpperCase();
         
-        // Check if exists
-        const existing = await shipmentsCollection.findOne({ trackingCode: upperCode });
-        if (existing) {
-            return res.status(409).json({ error: 'Tracking code already exists' });
+        if (!trackingCode || !trackingCode.trim()) {
+            return res.status(400).json({ error: 'Tracking code is required' });
         }
         
-        const now = new Date().toLocaleString();
+        const upperCode = trackingCode.toUpperCase();
+        const existing = await shipmentsCollection.findOne({ trackingCode: upperCode });
+        if (existing) return res.status(409).json({ error: 'Tracking code already exists' });
         
-        // Status mapping
+        const now = new Date().toLocaleString();
         const statusMap = {
             'order_confirmed': 'Order Confirmed',
             'picked': 'Picked by Courier',
@@ -144,8 +137,9 @@ app.post('/api/shipments', async (req, res) => {
         };
         
         const status = shipmentData.status || 'order_confirmed';
+        const dutyAmount = shipmentData.parcel?.dutyFeesAmount || 'N/A';
+        const dutyStatus = shipmentData.parcel?.dutyFeesStatus || 'Paid';
         
-        // Build timeline based on status
         const timeline = [
             { date: now, title: 'Order Confirmed', desc: 'Your shipment has been confirmed', completed: status !== 'order_confirmed', active: status === 'order_confirmed' },
             { date: status === 'picked' || status === 'onway' || status === 'customs' || status === 'delivered' ? now : 'Pending', title: 'Picked by Courier', desc: 'Package picked up', completed: status === 'picked' || status === 'onway' || status === 'customs' || status === 'delivered', active: status === 'picked' },
@@ -154,16 +148,11 @@ app.post('/api/shipments', async (req, res) => {
             { date: status === 'delivered' ? now : 'Pending', title: 'Delivered', desc: 'Package delivered', completed: status === 'delivered', active: status === 'delivered' }
         ].filter(t => t.title !== 'Custom Hold' || status !== 'order_confirmed');
         
-        // Get duty fees data
-        const dutyAmount = shipmentData.parcel?.dutyFeesAmount || 'N/A';
-        const dutyStatus = shipmentData.parcel?.dutyFeesStatus || 'Paid';
-        const dutyDisplay = dutyAmount !== 'N/A' ? dutyAmount : dutyStatus;
-        
         const newShipment = {
             trackingCode: upperCode,
             status: status,
             statusText: statusMap[status],
-            statusDesc: shipmentData.statusDesc || `Your shipment is ${statusMap[status].toLowerCase()}`,
+            statusDesc: `Your shipment is ${statusMap[status].toLowerCase()}`,
             lastUpdated: now,
             createdAt: now,
             sender: {
@@ -184,7 +173,7 @@ app.post('/api/shipments', async (req, res) => {
                 type: shipmentData.parcel?.type || 'N/A',
                 dutyFeesStatus: dutyStatus,
                 dutyFeesAmount: dutyAmount,
-                dutyFeesDisplay: dutyDisplay,
+                dutyFeesDisplay: dutyAmount !== 'N/A' ? dutyAmount : dutyStatus,
                 pickupDate: now,
                 expectedDelivery: shipmentData.parcel?.expectedDelivery || 'Pending',
                 trackingStatus: statusMap[status]
@@ -195,8 +184,7 @@ app.post('/api/shipments', async (req, res) => {
                 shipmentCost: shipmentData.invoice?.shipmentCost || 'N/A',
                 clearanceCost: shipmentData.invoice?.clearanceCost || 'N/A',
                 totalAmount: shipmentData.invoice?.totalAmount || 'N/A',
-                paymentStatus: shipmentData.invoice?.paymentStatus || 'Pending',
-                paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery']
+                paymentStatus: shipmentData.invoice?.paymentStatus || 'Pending'
             },
             timeline: timeline,
             origin: shipmentData.sender?.country || 'Unknown',
@@ -212,58 +200,34 @@ app.post('/api/shipments', async (req, res) => {
     }
 });
 
-// Update shipment
 app.put('/api/shipments/:trackingCode', async (req, res) => {
     try {
         const trackingCode = req.params.trackingCode.toUpperCase();
         const updateData = req.body;
         updateData.lastUpdated = new Date().toLocaleString();
-        
-        if (updateData.receiver?.country) {
-            updateData.destination = updateData.receiver.country;
-        }
-        
-        const result = await shipmentsCollection.updateOne(
-            { trackingCode },
-            { $set: updateData }
-        );
-        
-        if (result.matchedCount === 0) {
-            return res.status(404).json({ error: 'Shipment not found' });
-        }
-        
+        if (updateData.receiver?.country) updateData.destination = updateData.receiver.country;
+        const result = await shipmentsCollection.updateOne({ trackingCode }, { $set: updateData });
+        if (result.matchedCount === 0) return res.status(404).json({ error: 'Shipment not found' });
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Delete shipment
 app.delete('/api/shipments/:trackingCode', async (req, res) => {
     try {
         const trackingCode = req.params.trackingCode.toUpperCase();
         const result = await shipmentsCollection.deleteOne({ trackingCode });
-        
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ error: 'Shipment not found' });
-        }
-        
+        if (result.deletedCount === 0) return res.status(404).json({ error: 'Shipment not found' });
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Serve HTML files
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
+app.get('*.html', (req, res) => { res.sendFile(path.join(__dirname, req.path)); });
 
-app.get('*.html', (req, res) => {
-    res.sendFile(path.join(__dirname, req.path));
-});
-
-// Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📁 Serving files from: ${__dirname}`);
