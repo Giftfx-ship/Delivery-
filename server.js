@@ -2,9 +2,13 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const path = require('path');
+const fetch = require('node-fetch'); // ← ADD THIS
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// YOUR RENDER APP URL - CHANGE THIS!
+const APP_URL = 'https://globalswiftt.onrender.com'; // ← CHANGE TO YOUR URL
 
 app.use(cors());
 app.use(express.json());
@@ -76,8 +80,31 @@ async function initDefaultData() {
 }
 
 connectDB();
+// ============================================
+// PING FUNCTION - KEEP SERVER AWAKE
+// ============================================
 
-// API Endpoints
+const keepAlive = () => {
+    setInterval(() => {
+        fetch(APP_URL)
+            .then(res => console.log(`✅ Ping status: ${res.status} - Server awake`))
+            .catch(err => console.error(`❌ Ping error: ${err.message}`));
+    }, 5 * 60 * 1000); // 5 minutes
+    console.log(`⏰ Ping every 5 minutes to ${APP_URL}`);
+};
+
+// ============================================
+// HEALTH CHECK ENDPOINT
+// ============================================
+
+app.get('/ping', (req, res) => {
+    res.status(200).send('OK');
+});
+
+// ============================================
+// API ENDPOINTS
+// ============================================
+
 app.get('/api/shipments', async (req, res) => {
     try {
         const shipments = await shipmentsCollection.find({}).toArray();
@@ -199,7 +226,6 @@ app.post('/api/shipments', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 app.put('/api/shipments/:trackingCode', async (req, res) => {
     try {
         const trackingCode = req.params.trackingCode.toUpperCase();
@@ -228,7 +254,17 @@ app.delete('/api/shipments/:trackingCode', async (req, res) => {
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 app.get('*.html', (req, res) => { res.sendFile(path.join(__dirname, req.path)); });
 
+// ============================================
+// START SERVER WITH PING
+// ============================================
+
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📁 Serving files from: ${__dirname}`);
+    
+    // Start keep-alive ping (only in production)
+    if (process.env.NODE_ENV === 'production' || true) {
+        keepAlive();
+    }
 });
+            
