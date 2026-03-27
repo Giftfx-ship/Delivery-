@@ -9,8 +9,9 @@ const PORT = process.env.PORT || 3000;
 
 // YOUR RENDER APP URL - CHANGE THIS!
 const APP_URL = 'https://globalswiftservice.onrender.com'; // ← CHANGE TO YOUR URL
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+// Simple ping endpoint - FAST response with no loading
+app.get('/ping', (req, res) => {
+    res.status(200).send('OK');
 });
 app.use(cors());
 app.use(express.json());
