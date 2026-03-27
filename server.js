@@ -7,8 +7,7 @@ const fetch = require('node-fetch'); // ← ADD THIS
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// YOUR RENDER APP URL - CHANGE THIS!
-const APP_URL = 'https://globalswiftservice.onrender.com'; // ← CHANGE TO YOUR URL
+
 // Simple ping endpoint - FAST response with no loading
 app.get('/ping', (req, res) => {
     res.status(200).send('OK');
@@ -87,22 +86,12 @@ connectDB();
 // PING FUNCTION - KEEP SERVER AWAKE
 // ============================================
 
-const keepAlive = () => {
-    setInterval(() => {
-        fetch(APP_URL)
-            .then(res => console.log(`✅ Ping status: ${res.status} - Server awake`))
-            .catch(err => console.error(`❌ Ping error: ${err.message}`));
-    }, 5 * 60 * 1000); // 5 minutes
-    console.log(`⏰ Ping every 5 minutes to ${APP_URL}`);
-};
+
 
 // ============================================
 // HEALTH CHECK ENDPOINT
 // ============================================
 
-app.get('/ping', (req, res) => {
-    res.status(200).send('OK');
-});
 
 // ============================================
 // API ENDPOINTS
