@@ -300,129 +300,186 @@
             document.getElementById('shipmentModal').style.display = 'flex';
         }
 
-        async function saveShipment(event) {
-            event.preventDefault();
-            
-            document.getElementById('successMsg').style.display = 'none';
-            document.getElementById('errorMsg').style.display = 'none';
-            
-            const trackingField = document.getElementById('trackingCode');
-            if (!trackingField) {
-                alert('ERROR: Tracking code field not found!');
-                return;
-            }
-            
-            const trackingCode = trackingField.value.trim();
-            if (!trackingCode) {
-                alert('Please enter a tracking number');
-                trackingField.focus();
-                return;
-            }
-            
-            const upperCode = trackingCode.toUpperCase();
-            const editTracking = document.getElementById('editTracking').value;
-            const status = document.getElementById('status').value;
-            
-            const statusMap = {
-                'order_confirmed': 'Order Confirmed',
-                'picked': 'Picked by Courier',
-                'onway': 'On The Way',
-                'customs': 'Custom Hold',
-                'delivered': 'Delivered'
+        
+       async function saveShipment(event) {
+    event.preventDefault();
+    
+    document.getElementById('successMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'none';
+    
+    const trackingField = document.getElementById('trackingCode');
+    if (!trackingField) {
+        alert('ERROR: Tracking code field not found!');
+        return;
+    }
+    
+    const trackingCode = trackingField.value.trim();
+    if (!trackingCode) {
+        alert('Please enter a tracking number');
+        trackingField.focus();
+        return;
+    }
+    
+    const upperCode = trackingCode.toUpperCase();
+    const editTracking = document.getElementById('editTracking').value;
+    const status = document.getElementById('status').value;
+    
+    const statusMap = {
+        'order_confirmed': 'Order Confirmed',
+        'picked': 'Picked by Courier',
+        'onway': 'On The Way',
+        'customs': 'Custom Hold',
+        'delivered': 'Delivered'
+    };
+    
+    // ========== GENERATE TIMELINE BASED ON STATUS ==========
+    const now = new Date().toLocaleString();
+    const steps = [
+        { key: 'order_confirmed', title: 'Order Confirmed', desc: 'Your shipment has been confirmed' },
+        { key: 'picked', title: 'Picked by Courier', desc: 'Package picked up by courier' },
+        { key: 'onway', title: 'On The Way', desc: 'Shipment in transit' },
+        { key: 'delivered', title: 'Delivered', desc: 'Package delivered' }
+    ];
+    
+    // Find current status index
+    let currentIndex = steps.findIndex(s => s.key === status);
+    if (currentIndex === -1) currentIndex = 0;
+    
+    const timeline = [];
+    
+    steps.forEach((step, index) => {
+        const isCompleted = index <= currentIndex;
+        const isActive = index === currentIndex;
+        let date = isCompleted ? now : 'Pending';
+        
+        timeline.push({
+            date: date,
+            title: step.title,
+            desc: step.desc,
+            completed: isCompleted,
+            active: isActive
+        });
+    });
+    
+    // Add Custom Hold if status is customs (insert after On The Way)
+    if (status === 'customs') {
+        // Remove the On The Way item that will be replaced
+        const onWayIndex = timeline.findIndex(t => t.title === 'On The Way');
+        if (onWayIndex !== -1) {
+            timeline[onWayIndex] = {
+                date: now,
+                title: 'Custom Hold',
+                desc: 'Shipment is being held for customs clearance',
+                completed: true,
+                active: true
             };
-            
-            let coords = [25.2048, 55.2708];
-            const coordsInput = document.getElementById('coordinates').value;
-            if (coordsInput && coordsInput.trim()) {
-                const parts = coordsInput.split(',').map(Number);
-                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-                    coords = parts;
-                }
-            }
-            
-            const now = new Date().toLocaleString();
-            const dutyAmount = document.getElementById('dutyFeesAmount').value.trim();
-            const dutyStatus = document.getElementById('dutyFeesStatus').value;
-            
-            const newShipment = {
-                status: status,
-                statusText: statusMap[status],
-                lastUpdated: now,
-                sender: {
-                    name: document.getElementById('senderName').value || 'N/A',
-                    country: document.getElementById('senderCountry').value || 'Unknown',
-                    address: document.getElementById('senderAddress').value || '',
-                    phone: document.getElementById('senderPhone').value || 'N/A'
-                },
-                receiver: {
-                    name: document.getElementById('receiverName').value || 'N/A',
-                    country: document.getElementById('receiverCountry').value || 'Unknown',
-                    address: document.getElementById('receiverAddress').value || '',
-                    phone: document.getElementById('receiverPhone').value || 'N/A',
-                    email: document.getElementById('receiverEmail').value || 'N/A'
-                },
-                parcel: {
-                    weight: document.getElementById('weight').value || 'N/A',
-                    type: document.getElementById('type').value || 'N/A',
-                    dutyFeesStatus: dutyStatus,
-                    dutyFeesAmount: dutyAmount || 'N/A',
-                    pickupDate: now,
-                    expectedDelivery: document.getElementById('expectedDelivery').value || 'Pending',
-                    trackingStatus: statusMap[status]
-                },
-                invoice: {
-                    orderId: document.getElementById('orderId').value || Math.floor(Math.random() * 9000 + 1000).toString(),
-                    bookingMode: document.getElementById('bookingMode').value,
-                    shipmentCost: document.getElementById('shipmentCost').value || 'N/A',
-                    clearanceCost: document.getElementById('clearanceCost').value || 'N/A',
-                    totalAmount: document.getElementById('totalAmount').value || 'N/A',
-                    paymentStatus: document.getElementById('paymentStatus').value
-                },
-                origin: document.getElementById('senderCountry').value || 'Unknown',
-                destination: document.getElementById('receiverCountry').value || 'Unknown',
-                coordinates: coords
-            };
+            // Add On The Way after customs
+            timeline.push({
+                date: now,
+                title: 'On The Way',
+                desc: 'Shipment in transit after customs',
+                completed: false,
+                active: false
+            });
+        }
+    }
+    // ========== END TIMELINE GENERATION ==========
+    
+    let coords = [25.2048, 55.2708];
+    const coordsInput = document.getElementById('coordinates').value;
+    if (coordsInput && coordsInput.trim()) {
+        const parts = coordsInput.split(',').map(Number);
+        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+            coords = parts;
+        }
+    }
+    
+    const nowDate = new Date().toLocaleString();
+    const dutyAmount = document.getElementById('dutyFeesAmount').value.trim();
+    const dutyStatus = document.getElementById('dutyFeesStatus').value;
+    
+    const newShipment = {
+        status: status,
+        statusText: statusMap[status],
+        lastUpdated: nowDate,
+        sender: {
+            name: document.getElementById('senderName').value || 'N/A',
+            country: document.getElementById('senderCountry').value || 'Unknown',
+            address: document.getElementById('senderAddress').value || '',
+            phone: document.getElementById('senderPhone').value || 'N/A'
+        },
+        receiver: {
+            name: document.getElementById('receiverName').value || 'N/A',
+            country: document.getElementById('receiverCountry').value || 'Unknown',
+            address: document.getElementById('receiverAddress').value || '',
+            phone: document.getElementById('receiverPhone').value || 'N/A',
+            email: document.getElementById('receiverEmail').value || 'N/A'
+        },
+        parcel: {
+            weight: document.getElementById('weight').value || 'N/A',
+            type: document.getElementById('type').value || 'N/A',
+            dutyFeesStatus: dutyStatus,
+            dutyFeesAmount: dutyAmount || 'N/A',
+            pickupDate: nowDate,
+            expectedDelivery: document.getElementById('expectedDelivery').value || 'Pending',
+            trackingStatus: statusMap[status]
+        },
+        invoice: {
+            orderId: document.getElementById('orderId').value || Math.floor(Math.random() * 9000 + 1000).toString(),
+            bookingMode: document.getElementById('bookingMode').value,
+            shipmentCost: document.getElementById('shipmentCost').value || 'N/A',
+            clearanceCost: document.getElementById('clearanceCost').value || 'N/A',
+            totalAmount: document.getElementById('totalAmount').value || 'N/A',
+            paymentStatus: document.getElementById('paymentStatus').value
+        },
+        timeline: timeline,  // ← THIS IS KEY - REGENERATED TIMELINE!
+        origin: document.getElementById('senderCountry').value || 'Unknown',
+        destination: document.getElementById('receiverCountry').value || 'Unknown',
+        coordinates: coords
+    };
 
-            try {
-                let url = `${API_URL}/api/shipments`;
-                let method = 'POST';
-                
-                if (editTracking) {
-                    if (editTracking !== upperCode) {
-                        await fetch(`${API_URL}/api/shipments/${editTracking}`, { method: 'DELETE' });
-                    }
-                    url = `${API_URL}/api/shipments/${upperCode}`;
-                    method = 'PUT';
-                }
-                
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ trackingCode: upperCode, ...newShipment })
-                });
-                
-                const result = await response.json();
-                if (!response.ok) {
-                    if (response.status === 409) {
-                        document.getElementById('errorMsg').style.display = 'block';
-                    } else {
-                        throw new Error(result.error || 'Failed to save');
-                    }
-                    return;
-                }
-                
-                document.getElementById('successMsg').style.display = 'block';
-                closeModal();
-                loadShipments();
-                
-                setTimeout(() => {
-                    document.getElementById('successMsg').style.display = 'none';
-                }, 3000);
-                
-            } catch (error) {
-                console.error('Save error:', error);
-                alert('Error: ' + error.message);
+    try {
+        let url = `${API_URL}/api/shipments`;
+        let method = 'POST';
+        
+        if (editTracking) {
+            if (editTracking !== upperCode) {
+                await fetch(`${API_URL}/api/shipments/${editTracking}`, { method: 'DELETE' });
             }
+            url = `${API_URL}/api/shipments/${upperCode}`;
+            method = 'PUT';
+        }
+        
+        console.log('Saving timeline:', timeline); // Debug log
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trackingCode: upperCode, ...newShipment })
+        });
+        
+        const result = await response.json();
+        if (!response.ok) {
+            if (response.status === 409) {
+                document.getElementById('errorMsg').style.display = 'block';
+            } else {
+                throw new Error(result.error || 'Failed to save');
+            }
+            return;
+        }
+        
+        document.getElementById('successMsg').style.display = 'block';
+        closeModal();
+        loadShipments();
+        
+        setTimeout(() => {
+            document.getElementById('successMsg').style.display = 'none';
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Save error:', error);
+        alert('Error: ' + error.message);
+    }
         }
 
         async function deleteShipment(code) {
